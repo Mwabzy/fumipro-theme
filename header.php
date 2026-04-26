@@ -45,10 +45,16 @@
 ══════════════════════════════════════════════════ -->
 <header class="site-header" id="site-header">
     <div class="header-inner">
-        <!-- Logo -->
-        <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" id="site-logo">
-            <img src="<?php echo esc_url(get_template_directory_uri() . '/images/fumitech-logo.jpeg'); ?>" alt="Fumitech-Pyto Services Limited" class="site-logo-img" id="site-logo-img">
-        </a>
+
+        <!-- Brand row: logo + mobile hamburger -->
+        <div class="header-brand">
+            <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" id="site-logo">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech-Pyto Services Limited" class="site-logo-img" id="site-logo-img">
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
 
         <!-- Desktop Nav -->
         <nav class="desktop-nav" id="desktop-nav">
@@ -154,10 +160,6 @@
         <!-- CTA Button -->
         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-cta" id="header-cta">Get a Free Quote</a>
 
-        <!-- Mobile hamburger -->
-        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-            <span></span><span></span><span></span>
-        </button>
     </div>
 
     <!-- Mobile nav drawer -->

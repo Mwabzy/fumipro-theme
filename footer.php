@@ -4,7 +4,7 @@
         <!-- Brand column -->
         <div class="footer-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo footer-logo" id="footer-logo">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/fumitech-logo.jpeg'); ?>" alt="Fumitech-Pyto Services Limited" class="footer-logo-img" id="footer-logo-img">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech-Pyto Services Limited" class="footer-logo-img" id="footer-logo-img">
             </a>
             <p class="footer-tagline">Licensed, certified, and trusted by thousands of homes and businesses across Nairobi and Kenya.</p>
             <div class="footer-social">

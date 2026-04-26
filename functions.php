@@ -198,6 +198,56 @@ add_action('save_post_fumitech_product', function ($post_id) {
 });
 
 
+// ── Featured on Homepage metabox ─────────────────────────────────────────────
+add_action('add_meta_boxes', function () {
+    add_meta_box(
+        'fumitech_product_featured',
+        '⭐ Featured on Homepage',
+        'fumitech_featured_meta_cb',
+        'fumitech_product',
+        'side',
+        'high'
+    );
+});
+
+function fumitech_featured_meta_cb($post) {
+    wp_nonce_field('fumitech_featured_save', 'fumitech_featured_nonce');
+    $featured = get_post_meta($post->ID, '_fumitech_featured', true);
+    ?>
+    <style>
+        .fumitech-featured-wrap { padding: 4px 0; }
+        .fumitech-featured-wrap label {
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; font-size: 14px; font-weight: 500;
+        }
+        .fumitech-featured-wrap input[type=checkbox] {
+            width: 18px; height: 18px; accent-color: #0ea5e9; cursor: pointer;
+        }
+        .fumitech-featured-wrap .desc {
+            margin: 8px 0 0; font-size: 12px; color: #64748b; line-height: 1.5;
+        }
+    </style>
+    <div class="fumitech-featured-wrap">
+        <label>
+            <input type="checkbox" name="fumitech_featured" value="1"
+                   <?php checked($featured, '1'); ?> />
+            Show on homepage
+        </label>
+        <p class="desc">Tick to include this product in the homepage showcase. Up to 8 products are shown (4 columns × 2 rows on desktop).</p>
+    </div>
+    <?php
+}
+
+add_action('save_post_fumitech_product', function ($post_id) {
+    if (!isset($_POST['fumitech_featured_nonce']) ||
+        !wp_verify_nonce($_POST['fumitech_featured_nonce'], 'fumitech_featured_save')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    update_post_meta($post_id, '_fumitech_featured', isset($_POST['fumitech_featured']) ? '1' : '0');
+}, 20);
+
+
 // ── Service meta box ─────────────────────────────────────────────────────────
 add_action('add_meta_boxes', function () {
     add_meta_box(
