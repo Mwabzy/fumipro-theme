@@ -3,7 +3,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fumitech-Pyto Services Limited — Licensed, certified, and trusted pest control services across Nairobi and Kenya. Fast, effective, and eco-friendly fumigation available 24/7.">
+    <meta name="description" content="Fumitech Services Limited — Licensed, certified, and trusted pest control services across Nairobi and Kenya. Fast, effective, and eco-friendly fumigation available 24/7.">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -49,7 +49,7 @@
         <!-- Brand row: logo + mobile hamburger -->
         <div class="header-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" id="site-logo">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech-Pyto Services Limited" class="site-logo-img" id="site-logo-img">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech Services Limited" class="site-logo-img" id="site-logo-img">
             </a>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
                 <span></span><span></span><span></span>
@@ -68,7 +68,7 @@
                     echo '
                     <ul class="nav-list">
                       <li><a href="' . esc_url($h) . '">Home</a></li>
-                      <li><a href="' . esc_url($h . 'about') . '">About Us</a></li>
+                      <li><a href="' . esc_url($h . '#about') . '">About Us</a></li>
 
                       <li class="has-dropdown">
                         <a href="' . esc_url($h . 'products') . '">Products <span class="nav-arrow">&#9660;</span></a>
@@ -178,7 +178,7 @@
     <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
 
         <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
-        <a href="<?php echo esc_url(home_url('/about')); ?>">About Us</a>
+        <a href="<?php echo esc_url(home_url('/#about')); ?>">About Us</a>
 
         <!-- Products -->
         <div class="mob-section">

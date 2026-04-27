@@ -750,12 +750,6 @@ button {
    HERO SECTION
 ══════════════════════════════════════════════════════════════ */
 .hero {
-  background: linear-gradient(
-    135deg,
-    var(--sky-900) 0%,
-    var(--sky-700) 55%,
-    var(--sky-600) 100%
-  );
   padding: 80px 5% 72px;
   display: flex;
   align-items: center;
@@ -763,39 +757,74 @@ button {
   gap: 48px;
   position: relative;
   overflow: hidden;
+  /* Fallback colour when no image is uploaded */
+  background: var(--sky-900);
 }
-.hero::before {
-  content: "";
+
+/* ── Background image slides ──────────────────────────────────── */
+.hero-slides-bg {
   position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.05) 0%,
-    transparent 70%
+  inset: 0;
+  z-index: 0;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  will-change: opacity;
+}
+.hero-slide.active {
+  opacity: 1;
+}
+
+/* ── Gradient overlay (always on top of the image) ───────────── */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(12, 74, 110, 0.90) 0%,
+    rgba(3, 105, 161, 0.80) 50%,
+    rgba(2, 132, 199, 0.65) 100%
   );
+  z-index: 1;
   pointer-events: none;
 }
-.hero::after {
-  content: "";
+
+/* ── Dot navigation ──────────────────────────────────────────── */
+.hero-dots {
   position: absolute;
-  bottom: -60px;
-  left: -60px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(
-    circle,
-    rgba(14, 165, 233, 0.15) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 4;
 }
+.hero-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s;
+}
+.hero-dot.active {
+  background: var(--white);
+  transform: scale(1.35);
+  border-color: var(--white);
+}
+
 .hero-content {
   max-width: 560px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .hero-badge {
   display: inline-flex;
@@ -859,7 +888,7 @@ button {
 .hero-visual {
   flex-shrink: 0;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .hero-card-stack {
   position: relative;

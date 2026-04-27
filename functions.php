@@ -53,6 +53,121 @@ add_action('wp_enqueue_scripts', function () {
 }, 100);
 
 
+// ── Hero Slides admin menu ───────────────────────────────────────────────────
+add_action('admin_menu', function () {
+    add_menu_page(
+        'Hero Carousel',
+        'Hero Slides',
+        'manage_options',
+        'fumitech-hero-slides',
+        'fumitech_hero_slides_page',
+        'dashicons-images-alt2',
+        4
+    );
+});
+
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'toplevel_page_fumitech-hero-slides') return;
+    wp_enqueue_media();
+    wp_enqueue_script(
+        'fumitech-hero-admin',
+        get_template_directory_uri() . '/js/hero-admin.js',
+        ['jquery'],
+        '1.0',
+        true
+    );
+});
+
+function fumitech_hero_slides_page() {
+    $saved = false;
+
+    if (isset($_POST['fumitech_hero_save']) &&
+        isset($_POST['fumitech_hero_nonce']) &&
+        wp_verify_nonce($_POST['fumitech_hero_nonce'], 'fumitech_hero_save') &&
+        current_user_can('manage_options')) {
+
+        $clean = [];
+        if (!empty($_POST['slides']) && is_array($_POST['slides'])) {
+            foreach (array_values($_POST['slides']) as $s) {
+                $id = absint($s['id'] ?? 0);
+                if (!$id) continue;
+                $clean[] = [
+                    'id'       => $id,
+                    'url'      => wp_get_attachment_image_url($id, 'full') ?: esc_url_raw($s['url'] ?? ''),
+                    'headline' => sanitize_text_field($s['headline'] ?? ''),
+                    'sub'      => sanitize_text_field($s['sub'] ?? ''),
+                ];
+            }
+        }
+        update_option('fumitech_hero_slides', $clean);
+        $saved = true;
+    }
+
+    $slides = get_option('fumitech_hero_slides', []);
+    ?>
+    <div class="wrap">
+        <h1 style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:26px;">🖼</span> Hero Carousel Slides
+        </h1>
+        <?php if ($saved) : ?>
+            <div class="notice notice-success is-dismissible"><p><strong>Slides saved successfully!</strong></p></div>
+        <?php endif; ?>
+        <p style="color:#64748b;max-width:640px;margin-bottom:24px;">
+            Add background images for the homepage hero. Images rotate automatically every 5 seconds.
+            <br><strong>Recommended size:</strong> 1920 × 1080 px (landscape). The gradient overlay is always applied over the image.
+        </p>
+
+        <form method="post" id="hero-slides-form">
+            <?php wp_nonce_field('fumitech_hero_save', 'fumitech_hero_nonce'); ?>
+
+            <div id="hero-slides-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:28px;">
+                <?php foreach ($slides as $i => $slide) :
+                    $thumb = wp_get_attachment_image_url($slide['id'], 'medium') ?: $slide['url'];
+                ?>
+                <div class="fh-slide-card" data-index="<?php echo $i; ?>">
+                    <div class="fh-thumb" style="background-image:url('<?php echo esc_url($thumb); ?>')">
+                        <button type="button" class="fh-remove" title="Remove slide">&times;</button>
+                        <span class="fh-slide-num"><?php echo $i + 1; ?></span>
+                    </div>
+                    <div class="fh-fields">
+                        <input type="hidden" name="slides[<?php echo $i; ?>][id]"  value="<?php echo esc_attr($slide['id']); ?>">
+                        <input type="hidden" name="slides[<?php echo $i; ?>][url]" value="<?php echo esc_url($slide['url']); ?>">
+                        <label>Headline <small>(leave blank for default)</small></label>
+                        <input type="text" name="slides[<?php echo $i; ?>][headline]" value="<?php echo esc_attr($slide['headline']); ?>" placeholder="Protecting Your Home &amp; Business…">
+                        <label>Subheadline <small>(leave blank for default)</small></label>
+                        <input type="text" name="slides[<?php echo $i; ?>][sub]" value="<?php echo esc_attr($slide['sub']); ?>" placeholder="Fast, effective, eco-friendly…">
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                <button type="button" id="fh-add-slide" class="button button-secondary" style="height:38px;font-size:14px;">
+                    + Add Image
+                </button>
+                <button type="submit" name="fumitech_hero_save" class="button button-primary" style="height:38px;font-size:14px;">
+                    Save Slides
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .fh-slide-card { background:#fff; border:1.5px solid #e2e8f0; border-radius:12px; overflow:hidden; }
+        .fh-thumb { aspect-ratio:16/9; background:center/cover no-repeat #0ea5e9; position:relative; }
+        .fh-remove { position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,0.55); color:#fff; border:none; cursor:pointer; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+        .fh-remove:hover { background:rgba(220,38,38,.8); }
+        .fh-slide-num { position:absolute; bottom:8px; left:10px; background:rgba(0,0,0,0.45); color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; }
+        .fh-fields { padding:14px; display:flex; flex-direction:column; gap:6px; }
+        .fh-fields label { font-size:12px; font-weight:600; color:#1e293b; }
+        .fh-fields small { font-weight:400; color:#94a3b8; }
+        .fh-fields input[type=text] { width:100%; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; }
+        .fh-fields input[type=text]:focus { outline:none; border-color:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,.15); }
+    </style>
+    <?php
+}
+
+
 // ── Custom Post Types ────────────────────────────────────────────────────────
 function fumitech_register_post_types() {
 

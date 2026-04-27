@@ -229,7 +229,7 @@
       }
 
       var lines = [
-        'Hello Fumitech-Pyto Services,',
+        'Hello Fumitech Services,',
         '',
         'I would like to book a service:',
         '',
@@ -269,7 +269,7 @@
       }
 
       var lines = [
-        'Hello Fumitech-Pyto Services,',
+        'Hello Fumitech Services,',
         '',
         'I have an enquiry:',
         '',
@@ -287,6 +287,66 @@
       );
       enquiryForm.reset();
     });
+  }
+
+  /* ── Hero image carousel ────────────────────────────────── */
+  var heroSlides   = document.querySelectorAll('.hero-slide');
+  var heroDots     = document.querySelectorAll('.hero-dot');
+  var heroTitle    = document.querySelector('.hero-title');
+  var heroSub      = document.querySelector('.hero-sub');
+  var slidesData   = (typeof window.fumiHeroSlides !== 'undefined') ? window.fumiHeroSlides : [];
+  var currentSlide = 0;
+  var carouselTimer;
+
+  // Store original headline/sub so we can fall back to them
+  var defaultTitle = heroTitle ? heroTitle.textContent : '';
+  var defaultSub   = heroSub   ? heroSub.textContent   : '';
+
+  function goToSlide(index) {
+    if (!heroSlides.length) return;
+    var prev = currentSlide;
+    currentSlide = (index + heroSlides.length) % heroSlides.length;
+
+    heroSlides[prev].classList.remove('active');
+    heroSlides[currentSlide].classList.add('active');
+
+    if (heroDots.length) {
+      heroDots[prev].classList.remove('active');
+      heroDots[prev].setAttribute('aria-selected', 'false');
+      heroDots[currentSlide].classList.add('active');
+      heroDots[currentSlide].setAttribute('aria-selected', 'true');
+    }
+
+    // Swap headline / sub if the slide has overrides
+    var data = slidesData[currentSlide] || {};
+    if (heroTitle) heroTitle.textContent = (data.headline && data.headline.trim()) ? data.headline : defaultTitle;
+    if (heroSub)   heroSub.textContent   = (data.sub      && data.sub.trim())      ? data.sub      : defaultSub;
+  }
+
+  function startCarousel() {
+    if (heroSlides.length < 2) return;
+    carouselTimer = setInterval(function () {
+      goToSlide(currentSlide + 1);
+    }, 5000);
+  }
+
+  function resetCarousel() {
+    clearInterval(carouselTimer);
+    startCarousel();
+  }
+
+  if (heroSlides.length > 1) {
+    // Dot click → jump to slide and reset timer
+    heroDots.forEach(function (dot, i) {
+      dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      dot.setAttribute('role', 'tab');
+      dot.addEventListener('click', function () {
+        goToSlide(i);
+        resetCarousel();
+      });
+    });
+
+    startCarousel();
   }
 
   /* ── Active nav link on scroll ──────────────────────────── */

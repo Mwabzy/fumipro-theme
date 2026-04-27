@@ -3,11 +3,32 @@
 <!-- ══════════════════════════════════════════════
      HERO
 ══════════════════════════════════════════════════ -->
+<?php
+$hero_slides = get_option('fumitech_hero_slides', []);
+$slide_count  = count($hero_slides);
+?>
 <section class="hero" id="hero">
+
+    <!-- Background image slides -->
+    <div class="hero-slides-bg" id="hero-slides-bg" aria-hidden="true">
+        <?php if ($slide_count) :
+            foreach ($hero_slides as $i => $slide) :
+                $img_url = wp_get_attachment_image_url($slide['id'], 'full') ?: $slide['url'];
+        ?>
+            <div class="hero-slide<?php echo $i === 0 ? ' active' : ''; ?>"
+                 style="background-image:url('<?php echo esc_url($img_url); ?>')">
+            </div>
+        <?php endforeach; endif; ?>
+    </div>
+
+    <!-- Gradient overlay (always present) -->
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <!-- Content -->
     <div class="hero-content">
         <div class="hero-badge">&#x2714; Licensed &amp; Certified Professionals</div>
-        <h1 class="hero-title">Protecting Your Home &amp; Business from Pests</h1>
-        <p class="hero-sub">Fast, effective, and eco-friendly fumigation services. Available 24/7 for emergency treatments across Nairobi and surrounding areas.</p>
+        <h1 class="hero-title" id="hero-headline">Protecting Your Home &amp; Business from Pests</h1>
+        <p class="hero-sub" id="hero-sub">Fast, effective, and eco-friendly fumigation services. Available 24/7 for emergency treatments across Nairobi and surrounding areas.</p>
         <div class="hero-btns">
             <button type="button" class="btn-primary" id="hero-book-btn" data-modal="book-now">Book Now</button>
             <a href="tel:+254734865099" class="btn-outline" id="hero-call-btn">&#x1F4DE; Call Now</a>
@@ -18,6 +39,8 @@
             <div class="trust-item"><strong>24/7</strong><span>Emergency Response</span></div>
         </div>
     </div>
+
+    <!-- Floating badges -->
     <div class="hero-visual" aria-hidden="true">
         <div class="hero-card-stack">
             <div class="hero-badge-float hero-badge-float--1">
@@ -35,6 +58,32 @@
             <div class="hero-circle"></div>
         </div>
     </div>
+
+    <!-- Carousel dots (only when multiple slides exist) -->
+    <?php if ($slide_count > 1) : ?>
+    <div class="hero-dots" id="hero-dots" role="tablist" aria-label="Hero slides">
+        <?php foreach ($hero_slides as $i => $slide) : ?>
+        <button class="hero-dot<?php echo $i === 0 ? ' active' : ''; ?>"
+                role="tab"
+                aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>"
+                aria-label="Slide <?php echo $i + 1; ?>"
+                data-index="<?php echo $i; ?>">
+        </button>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($slide_count) : ?>
+    <script>
+    window.fumiHeroSlides = <?php echo wp_json_encode(array_map(function($s) {
+        return [
+            'headline' => $s['headline'] ?? '',
+            'sub'      => $s['sub'] ?? '',
+        ];
+    }, $hero_slides)); ?>;
+    </script>
+    <?php endif; ?>
+
 </section>
 
 <!-- ══════════════════════════════════════════════
@@ -189,7 +238,7 @@ if ($featured_products->have_posts()) : ?>
                     <path d="M40 14C30 28 20 30 14 28C14 42 22 56 40 62C58 56 66 42 66 28C60 30 50 28 40 14Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
                     <polyline points="28,42 36,50 54,32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 </svg>
-                <p class="about-teaser-img-label">Fumitech&#8209;Pyto Services</p>
+                <p class="about-teaser-img-label">Fumitech Services</p>
             </div>
             <div class="about-teaser-stats">
                 <div class="about-stat"><strong>10+</strong><span>Years in Business</span></div>
@@ -199,8 +248,8 @@ if ($featured_products->have_posts()) : ?>
         </div>
         <div class="about-teaser-text">
             <span class="section-label">About Us</span>
-            <h2 class="section-title" style="text-align:left;">We Are Fumitech&#8209;Pyto Services Limited</h2>
-            <p class="about-teaser-body">Founded in Nairobi, Fumitech&#8209;Pyto Services Limited is a fully licensed and certified pest control company serving homes, businesses, and industries across Kenya. Our team of trained professionals uses WHO&#8209;approved, eco&#8209;friendly products to deliver fast, effective, and lasting pest control solutions.</p>
+            <h2 class="section-title" style="text-align:left;">We Are Fumitech Services Limited</h2>
+            <p class="about-teaser-body">Founded in Nairobi, Fumitech Services Limited is a fully licensed and certified pest control company serving homes, businesses, and industries across Kenya. Our team of trained professionals uses WHO&#8209;approved, eco&#8209;friendly products to deliver fast, effective, and lasting pest control solutions.</p>
             <p class="about-teaser-body">We believe every space deserves to be safe and pest&#8209;free — and we stand behind every treatment with a <strong>30&#8209;day satisfaction guarantee</strong>.</p>
             <div class="about-teaser-badges">
                 <span class="about-badge">&#x2714; PCPB Licensed</span>
@@ -235,7 +284,7 @@ if ($featured_products->have_posts()) : ?>
             </div>
         </div>
         <div class="why-text">
-            <span class="section-label">Why Choose Fumitech-Pyto</span>
+            <span class="section-label">Why Choose Fumitech</span>
             <h2 class="section-title why-h2">Trusted by Thousands of Homes &amp; Businesses</h2>
             <p class="section-sub why-sub">We combine industry expertise with cutting-edge techniques to deliver lasting pest control solutions.</p>
             <ul class="why-list">
@@ -308,13 +357,13 @@ if ($featured_products->have_posts()) : ?>
         <div class="testi-grid">
             <div class="testi-card" id="testi-1">
                 <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p>"Fumitech-Pyto treated our office for cockroaches and the results were incredible. Professional team, very thorough. Highly recommend!"</p>
+                <p>"Fumitech treated our office for cockroaches and the results were incredible. Professional team, very thorough. Highly recommend!"</p>
                 <strong>Mary N.</strong>
                 <span>Westlands, Nairobi</span>
             </div>
             <div class="testi-card" id="testi-2">
                 <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p>"We had a severe bed bug problem. Fumitech-Pyto came the next morning and within 48 hours we had zero activity. Amazing service!"</p>
+                <p>"We had a severe bed bug problem. Fumitech came the next morning and within 48 hours we had zero activity. Amazing service!"</p>
                 <strong>James M.</strong>
                 <span>Kilimani</span>
             </div>
