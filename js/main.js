@@ -119,10 +119,9 @@
   var trustItems = document.querySelectorAll('.trust-item strong');
   if (trustItems.length && 'IntersectionObserver' in window) {
     var counters = [
-      { el: trustItems[0], end: 5000, suffix: '+' },
-      { el: trustItems[1], end: 10,   suffix: '+' },
-      { el: trustItems[2], end: 100,  suffix: '%' },
-      { el: trustItems[3], end: 24,   suffix: '/7' },
+      { el: trustItems[0], end: 10,  suffix: '+' },
+      { el: trustItems[1], end: 100, suffix: '%' },
+      { el: trustItems[2], end: 24,  suffix: '/7' },
     ];
 
     var counterObserver = new IntersectionObserver(function (entries) {
@@ -137,6 +136,118 @@
 
     counters.forEach(function (c) {
       if (c.el) counterObserver.observe(c.el);
+    });
+  }
+
+  /* ── Search toggle ──────────────────────────────────────── */
+  var searchToggle = document.getElementById('search-toggle');
+  var searchDrawer = document.getElementById('search-drawer');
+  var searchInput  = document.getElementById('search-input');
+
+  if (searchToggle && searchDrawer) {
+    searchToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = searchDrawer.classList.toggle('open');
+      searchToggle.classList.toggle('active', isOpen);
+      searchToggle.setAttribute('aria-expanded', isOpen);
+      searchDrawer.setAttribute('aria-hidden', !isOpen);
+      if (isOpen && searchInput) searchInput.focus();
+    });
+
+    document.addEventListener('click', function (e) {
+      var searchWrap = document.getElementById('header-search');
+      if (searchWrap && !searchWrap.contains(e.target)) {
+        searchDrawer.classList.remove('open');
+        searchToggle.classList.remove('active');
+        searchToggle.setAttribute('aria-expanded', 'false');
+        searchDrawer.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  /* ── Book Now modal ──────────────────────────────────────── */
+  var bookModal    = document.getElementById('book-now-modal');
+  var modalClose   = document.getElementById('modal-close');
+  var bookingForm  = document.getElementById('booking-form');
+
+  function openModal() {
+    if (!bookModal) return;
+    bookModal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    var firstInput = bookModal.querySelector('input, select');
+    if (firstInput) setTimeout(function () { firstInput.focus(); }, 50);
+  }
+
+  function closeModal() {
+    if (!bookModal) return;
+    bookModal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+
+  // Open on hero "Book Now" button
+  var heroBookBtn = document.getElementById('hero-book-btn');
+  if (heroBookBtn) {
+    heroBookBtn.addEventListener('click', openModal);
+  }
+
+  // Also support any element with data-modal="book-now"
+  document.querySelectorAll('[data-modal="book-now"]').forEach(function (el) {
+    el.addEventListener('click', openModal);
+  });
+
+  // Close on × button
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+
+  // Close on overlay click (outside dialog)
+  if (bookModal) {
+    bookModal.addEventListener('click', function (e) {
+      if (e.target === bookModal) closeModal();
+    });
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !bookModal.hasAttribute('hidden')) closeModal();
+    });
+  }
+
+  // Booking form → WhatsApp redirect
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name     = (bookingForm.querySelector('#book-name')     || {}).value || '';
+      var phone    = (bookingForm.querySelector('#book-phone')    || {}).value || '';
+      var email    = (bookingForm.querySelector('#book-email')    || {}).value || '';
+      var service  = (bookingForm.querySelector('#book-service')  || {}).value || '';
+      var location = (bookingForm.querySelector('#book-location') || {}).value || '';
+      var date     = (bookingForm.querySelector('#book-date')     || {}).value || '';
+      var message  = (bookingForm.querySelector('#book-message')  || {}).value || '';
+
+      if (!name || !phone || !service || !location) {
+        var firstEmpty = bookingForm.querySelector(':invalid');
+        if (firstEmpty) firstEmpty.focus();
+        return;
+      }
+
+      var lines = [
+        'Hello Fumitech-Pyto Services,',
+        '',
+        'I would like to book a service:',
+        '',
+        '• Name: '     + name,
+        '• Phone: '    + phone,
+      ];
+      if (email)    lines.push('• Email: '    + email);
+      lines.push(  '• Service: '  + service);
+      lines.push(  '• Location: ' + location);
+      if (date)     lines.push('• Date: '     + date);
+      if (message)  lines.push('• Notes: '    + message);
+      lines.push('', 'Please confirm my booking. Thank you!');
+
+      var waMsg = lines.join('\n');
+      var waUrl = 'https://wa.me/254734865099?text=' + encodeURIComponent(waMsg);
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      closeModal();
+      bookingForm.reset();
     });
   }
 

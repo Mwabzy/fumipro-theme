@@ -16,14 +16,14 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '2.0'
+        '3.1'
     );
 
     wp_enqueue_script(
         'fumipro-main',
         get_stylesheet_directory_uri() . '/js/main.js',
         [],
-        '1.0',
+        '2.0',
         true
     );
 }
@@ -128,6 +128,11 @@ add_action('after_switch_theme', function () {
 });
 
 
+// ── Hide the default taxonomy checkbox metabox (replaced by dropdown below) ──
+add_action('add_meta_boxes', function () {
+    remove_meta_box('product_categorydiv', 'fumitech_product', 'side');
+}, 20);
+
 // ── Product meta box ─────────────────────────────────────────────────────────
 add_action('add_meta_boxes', function () {
     add_meta_box(
@@ -142,19 +147,107 @@ add_action('add_meta_boxes', function () {
 
 function fumitech_product_meta_cb($post) {
     wp_nonce_field('fumitech_product_save', 'fumitech_product_nonce');
+
     $price   = get_post_meta($post->ID, '_fumitech_price', true);
     $badge   = get_post_meta($post->ID, '_fumitech_badge', true);
     $wa_msg  = get_post_meta($post->ID, '_fumitech_wa_message', true);
+
+    // ── Category data ────────────────────────────────────────────────────────
+    $all_terms = get_terms([
+        'taxonomy'   => 'product_category',
+        'hide_empty' => false,
+        'orderby'    => 'name',
+    ]);
+
+    $parent_terms = [];
+    $child_map    = []; // parent_id => [ child term objects ]
+    if (!is_wp_error($all_terms)) {
+        foreach ($all_terms as $term) {
+            if ($term->parent == 0) {
+                $parent_terms[] = $term;
+            } else {
+                $child_map[$term->parent][] = ['id' => $term->term_id, 'name' => $term->name];
+            }
+        }
+    }
+
+    // Current assignment
+    $current_terms     = wp_get_object_terms($post->ID, 'product_category', ['fields' => 'ids']);
+    $current_parent_id = 0;
+    $current_child_id  = 0;
+
+    if (!is_wp_error($current_terms) && !empty($current_terms)) {
+        $tid  = (int) $current_terms[0];
+        $term = get_term($tid, 'product_category');
+        if ($term && !is_wp_error($term)) {
+            if ($term->parent == 0) {
+                $current_parent_id = $tid;
+            } else {
+                $current_child_id  = $tid;
+                $current_parent_id = (int) $term->parent;
+            }
+        }
+    }
     ?>
     <style>
         .fumitech-meta-table { width:100%; border-collapse:collapse; }
         .fumitech-meta-table th { width:200px; padding:12px 12px 12px 0; text-align:left; font-weight:600; vertical-align:top; color:#1e293b; }
         .fumitech-meta-table td { padding:8px 0; }
-        .fumitech-meta-table input[type=text] { width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; }
-        .fumitech-meta-table input[type=text]:focus { outline:none; border-color:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.15); }
+        .fumitech-meta-table input[type=text],
+        .fumitech-meta-table select { width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; background:#fff; }
+        .fumitech-meta-table input[type=text]:focus,
+        .fumitech-meta-table select:focus { outline:none; border-color:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.15); }
         .fumitech-meta-table .desc { font-size:12px; color:#64748b; margin-top:4px; }
+        .fumitech-cat-hint { display:inline-block; margin-top:6px; font-size:12px; color:#64748b; }
+        .fumitech-cat-hint a { color:#0ea5e9; text-decoration:none; }
+        .fumitech-cat-hint a:hover { text-decoration:underline; }
     </style>
+
     <table class="fumitech-meta-table">
+        <!-- ── Category ───────────────────────────────────────────────────── -->
+        <tr>
+            <th><label for="fumitech_cat_parent">Category</label></th>
+            <td>
+                <select id="fumitech_cat_parent" name="fumitech_cat_parent">
+                    <option value="">— Select a category —</option>
+                    <?php foreach ($parent_terms as $term) : ?>
+                        <option value="<?php echo esc_attr($term->term_id); ?>"
+                            <?php selected($current_parent_id, $term->term_id); ?>>
+                            <?php echo esc_html($term->name); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (empty($parent_terms)) : ?>
+                    <p class="fumitech-cat-hint">
+                        No categories yet.
+                        <a href="<?php echo esc_url(admin_url('edit-tags.php?taxonomy=product_category&post_type=fumitech_product')); ?>" target="_blank">
+                            Add categories &rarr;
+                        </a>
+                    </p>
+                <?php endif; ?>
+            </td>
+        </tr>
+
+        <!-- ── Sub-category (shown only when parent has children) ─────────── -->
+        <tr id="fumitech_subcat_row" style="<?php echo ($current_parent_id && !empty($child_map[$current_parent_id])) ? '' : 'display:none'; ?>">
+            <th><label for="fumitech_cat_child">Sub-category</label></th>
+            <td>
+                <select id="fumitech_cat_child" name="fumitech_cat_child">
+                    <option value="">— None (keep parent only) —</option>
+                    <?php if ($current_parent_id && !empty($child_map[$current_parent_id])) :
+                        foreach ($child_map[$current_parent_id] as $child) : ?>
+                            <option value="<?php echo esc_attr($child['id']); ?>"
+                                <?php selected($current_child_id, $child['id']); ?>>
+                                <?php echo esc_html($child['name']); ?>
+                            </option>
+                        <?php endforeach;
+                    endif; ?>
+                </select>
+                <p class="desc">Optional — pick a more specific sub-category.</p>
+            </td>
+        </tr>
+
+        <!-- ── Price ──────────────────────────────────────────────────────── -->
         <tr>
             <th><label for="fumitech_price">Price (Ksh)</label></th>
             <td>
@@ -162,6 +255,8 @@ function fumitech_product_meta_cb($post) {
                        value="<?php echo esc_attr($price); ?>" placeholder="e.g. 1,500"/>
             </td>
         </tr>
+
+        <!-- ── Badge ──────────────────────────────────────────────────────── -->
         <tr>
             <th><label for="fumitech_badge">Badge Label</label></th>
             <td>
@@ -170,6 +265,8 @@ function fumitech_product_meta_cb($post) {
                 <p class="desc">Shown as a coloured tag on the card. Leave blank to hide.</p>
             </td>
         </tr>
+
+        <!-- ── WhatsApp Message ────────────────────────────────────────────── -->
         <tr>
             <th><label for="fumitech_wa_message">WhatsApp Order Message</label></th>
             <td>
@@ -180,6 +277,32 @@ function fumitech_product_meta_cb($post) {
             </td>
         </tr>
     </table>
+
+    <script>
+    (function () {
+        var childMap   = <?php echo wp_json_encode($child_map); ?>;
+        var parentSel  = document.getElementById('fumitech_cat_parent');
+        var childSel   = document.getElementById('fumitech_cat_child');
+        var childRow   = document.getElementById('fumitech_subcat_row');
+
+        function refreshChildren() {
+            var pid      = parseInt(parentSel.value, 10);
+            var children = childMap[pid] || [];
+
+            childSel.innerHTML = '<option value="">— None (keep parent only) —</option>';
+            children.forEach(function (c) {
+                var opt = document.createElement('option');
+                opt.value       = c.id;
+                opt.textContent = c.name;
+                childSel.appendChild(opt);
+            });
+
+            childRow.style.display = (pid && children.length) ? '' : 'none';
+        }
+
+        parentSel.addEventListener('change', refreshChildren);
+    })();
+    </script>
     <?php
 }
 
@@ -189,11 +312,26 @@ add_action('save_post_fumitech_product', function ($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
+    // ── Save custom meta fields ───────────────────────────────────────────────
     $fields = ['fumitech_price', 'fumitech_badge', 'fumitech_wa_message'];
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
         }
+    }
+
+    // ── Save category assignment ──────────────────────────────────────────────
+    // If a sub-category is chosen, assign that (it implies the parent).
+    // Otherwise assign the parent category. Clear if nothing selected.
+    $child_id  = isset($_POST['fumitech_cat_child'])  ? (int) $_POST['fumitech_cat_child']  : 0;
+    $parent_id = isset($_POST['fumitech_cat_parent']) ? (int) $_POST['fumitech_cat_parent'] : 0;
+
+    if ($child_id) {
+        wp_set_object_terms($post_id, [$child_id], 'product_category');
+    } elseif ($parent_id) {
+        wp_set_object_terms($post_id, [$parent_id], 'product_category');
+    } else {
+        wp_set_object_terms($post_id, [], 'product_category');
     }
 });
 

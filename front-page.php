@@ -9,11 +9,10 @@
         <h1 class="hero-title">Protecting Your Home &amp; Business from Pests</h1>
         <p class="hero-sub">Fast, effective, and eco-friendly fumigation services. Available 24/7 for emergency treatments across Nairobi and surrounding areas.</p>
         <div class="hero-btns">
-            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="btn-primary" id="hero-quote-btn">Get a Free Quote</a>
+            <button type="button" class="btn-primary" id="hero-book-btn" data-modal="book-now">Book Now</button>
             <a href="tel:+254734865099" class="btn-outline" id="hero-call-btn">&#x1F4DE; Call Now</a>
         </div>
         <div class="hero-trust">
-            <div class="trust-item"><strong>5,000+</strong><span>Homes Treated</span></div>
             <div class="trust-item"><strong>10+</strong><span>Years Experience</span></div>
             <div class="trust-item"><strong>100%</strong><span>Safe Products</span></div>
             <div class="trust-item"><strong>24/7</strong><span>Emergency Response</span></div>

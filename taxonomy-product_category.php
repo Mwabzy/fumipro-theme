@@ -1,13 +1,36 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Template for product_category taxonomy archives.
+ * Used when browsing /product-category/<slug>/
+ */
+get_header();
+
+$current_cat = get_queried_object();
+$parent_cat  = ($current_cat->parent)
+    ? get_term($current_cat->parent, 'product_category')
+    : null;
+?>
 
 <main class="cpt-archive">
 
     <!-- Archive hero -->
     <div class="archive-hero">
         <div class="archive-hero-inner">
-            <span class="section-label section-label--light">Our Products</span>
-            <h1>Pest Control Products</h1>
-            <p>Professional-grade equipment and chemicals available for purchase. Order easily via WhatsApp.</p>
+            <?php if ($parent_cat && !is_wp_error($parent_cat)) : ?>
+                <span class="section-label section-label--light">
+                    <a href="<?php echo esc_url(get_term_link($parent_cat)); ?>"
+                       style="color:inherit;opacity:.75;"><?php echo esc_html($parent_cat->name); ?></a>
+                    &rsaquo; <?php echo esc_html($current_cat->name); ?>
+                </span>
+            <?php else : ?>
+                <span class="section-label section-label--light">Products</span>
+            <?php endif; ?>
+            <h1><?php echo esc_html($current_cat->name); ?></h1>
+            <?php if ($current_cat->description) : ?>
+                <p><?php echo esc_html($current_cat->description); ?></p>
+            <?php else : ?>
+                <p>Browse our <?php echo esc_html(strtolower($current_cat->name)); ?> range. Order easily via WhatsApp.</p>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -23,36 +46,37 @@
                 'orderby'    => 'name',
             ]);
             if (!empty($top_cats) && !is_wp_error($top_cats)) :
-                $current_cat = get_queried_object();
-                $current_id  = (isset($current_cat->term_id)) ? $current_cat->term_id : 0;
+                $current_id = $current_cat->term_id;
+                /* Find which top-level category we're in */
+                $active_top = $current_cat;
+                if ($current_cat->parent) {
+                    $parent = get_term($current_cat->parent, 'product_category');
+                    if ($parent && !is_wp_error($parent)) $active_top = $parent;
+                }
             ?>
             <div class="prod-cat-filter">
                 <a href="<?php echo esc_url(get_post_type_archive_link('fumitech_product')); ?>"
-                   class="prod-cat-btn<?php echo (!$current_id) ? ' active' : ''; ?>">
-                    All Products
-                </a>
+                   class="prod-cat-btn">All Products</a>
                 <?php foreach ($top_cats as $cat) :
-                    $is_active = ($current_id === $cat->term_id);
-                    $children  = get_terms([
+                    $is_top_active = ($active_top->term_id === $cat->term_id);
+                    $children = get_terms([
                         'taxonomy'   => 'product_category',
                         'parent'     => $cat->term_id,
                         'hide_empty' => true,
                     ]);
                 ?>
                 <a href="<?php echo esc_url(get_term_link($cat)); ?>"
-                   class="prod-cat-btn<?php echo $is_active ? ' active' : ''; ?>">
+                   class="prod-cat-btn<?php echo $is_top_active ? ' active' : ''; ?>">
                     <?php echo esc_html($cat->name); ?>
                     <?php if (!empty($children) && !is_wp_error($children)) : ?>
                         <span style="margin-left:4px;font-size:10px;opacity:.6;">&#9660;</span>
                     <?php endif; ?>
                 </a>
-                <?php if (!empty($children) && !is_wp_error($children) && $is_active) : ?>
+                <?php if (!empty($children) && !is_wp_error($children) && $is_top_active) : ?>
                 <div class="prod-cat-children">
-                    <?php foreach ($children as $child) :
-                        $child_active = ($current_id === $child->term_id);
-                    ?>
+                    <?php foreach ($children as $child) : ?>
                     <a href="<?php echo esc_url(get_term_link($child)); ?>"
-                       class="prod-cat-btn prod-cat-btn--sub<?php echo $child_active ? ' active' : ''; ?>">
+                       class="prod-cat-btn prod-cat-btn--sub<?php echo ($current_id === $child->term_id) ? ' active' : ''; ?>">
                         <?php echo esc_html($child->name); ?>
                     </a>
                     <?php endforeach; ?>
@@ -65,11 +89,11 @@
             <?php if (have_posts()) : ?>
                 <div class="product-grid">
                     <?php while (have_posts()) : the_post();
-                        $price   = get_post_meta(get_the_ID(), '_fumitech_price', true);
-                        $badge   = get_post_meta(get_the_ID(), '_fumitech_badge', true);
-                        $wa_msg  = get_post_meta(get_the_ID(), '_fumitech_wa_message', true);
+                        $price  = get_post_meta(get_the_ID(), '_fumitech_price', true);
+                        $badge  = get_post_meta(get_the_ID(), '_fumitech_badge', true);
+                        $wa_msg = get_post_meta(get_the_ID(), '_fumitech_wa_message', true);
                         if (!$wa_msg) $wa_msg = "Hi, I'd like to order: " . get_the_title();
-                        $wa_url  = 'https://wa.me/254734865099?text=' . rawurlencode($wa_msg);
+                        $wa_url = 'https://wa.me/254734865099?text=' . rawurlencode($wa_msg);
                     ?>
                     <article class="product-card" id="product-<?php the_ID(); ?>">
 
@@ -128,13 +152,8 @@
             <?php else : ?>
                 <div class="archive-empty">
                     <div class="archive-empty-icon">📦</div>
-                    <h2>No products yet</h2>
-                    <p>Products will appear here once added from the dashboard.</p>
-                    <?php if (current_user_can('manage_options')) : ?>
-                        <a href="<?php echo esc_url(admin_url('post-new.php?post_type=fumitech_product')); ?>" class="btn-primary">
-                            + Add First Product
-                        </a>
-                    <?php endif; ?>
+                    <h2>No products in this category</h2>
+                    <p>Try browsing another category or <a href="<?php echo esc_url(get_post_type_archive_link('fumitech_product')); ?>">view all products</a>.</p>
                 </div>
             <?php endif; ?>
 
