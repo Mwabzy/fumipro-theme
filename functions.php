@@ -128,6 +128,61 @@ add_action('after_switch_theme', function () {
 });
 
 
+// ── Seed product categories & subcategories ──────────────────────────────────
+add_action('admin_init', function () {
+    if (get_option('fumitech_categories_seeded')) return;
+
+    $taxonomy = 'product_category';
+
+    $tree = [
+        'Equipment' => [
+            'Thermal Foggers',
+            'Knapsack Sprayers',
+            'Protective Gear',
+            'Sealing Tarps',
+            'Bait Stations',
+            'Gas Measuring Equipment',
+        ],
+        'Chemicals & Products' => [
+            'Industrial Chemicals',
+            'Rodenticides',
+            'Fungicides',
+            'Insecticides',
+            'Miticides',
+            'Insect Traps',
+            'Herbicides',
+            'Biologicals',
+            'Fumigants',
+            'Termiticides',
+            'Nematicides',
+            'Foliar',
+            'Disinfectants',
+        ],
+    ];
+
+    foreach ($tree as $parent_name => $children) {
+        // Insert parent if it doesn't exist
+        $existing = term_exists($parent_name, $taxonomy);
+        if ($existing) {
+            $parent_id = is_array($existing) ? (int) $existing['term_id'] : (int) $existing;
+        } else {
+            $result    = wp_insert_term($parent_name, $taxonomy);
+            $parent_id = is_wp_error($result) ? 0 : (int) $result['term_id'];
+        }
+
+        if (!$parent_id) continue;
+
+        foreach ($children as $child_name) {
+            if (!term_exists($child_name, $taxonomy, $parent_id)) {
+                wp_insert_term($child_name, $taxonomy, ['parent' => $parent_id]);
+            }
+        }
+    }
+
+    update_option('fumitech_categories_seeded', true);
+});
+
+
 // ── Hide the default taxonomy checkbox metabox (replaced by dropdown below) ──
 add_action('add_meta_boxes', function () {
     remove_meta_box('product_categorydiv', 'fumitech_product', 'side');
