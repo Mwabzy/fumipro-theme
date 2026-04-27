@@ -150,7 +150,7 @@
                       </li>
 
                       <li><a href="' . esc_url($h . 'shop') . '">Shop</a></li>
-                      <li><a href="' . esc_url($h . 'contact') . '">Contact Us</a></li>
+                      <li><a href="' . esc_url($h . '#contact') . '">Contact Us</a></li>
                     </ul>';
                 },
             ]);
@@ -287,7 +287,7 @@
         </div>
 
         <a href="<?php echo esc_url(home_url('/shop')); ?>">Shop</a>
-        <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact Us</a>
+        <a href="<?php echo esc_url(home_url('/#contact')); ?>">Contact Us</a>
         <form role="search" method="get" class="mob-search-form" action="<?php echo esc_url(home_url('/')); ?>">
             <input type="search" name="s" class="mob-search-input" placeholder="Search products, services&hellip;" autocomplete="off" aria-label="Search">
             <button type="submit" class="mob-search-btn" aria-label="Search">

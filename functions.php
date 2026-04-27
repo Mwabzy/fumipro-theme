@@ -16,14 +16,14 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.1'
+        '3.2'
     );
 
     wp_enqueue_script(
         'fumipro-main',
         get_stylesheet_directory_uri() . '/js/main.js',
         [],
-        '2.0',
+        '2.1',
         true
     );
 }

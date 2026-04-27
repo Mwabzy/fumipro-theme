@@ -251,6 +251,44 @@
     });
   }
 
+  /* ── Enquiry form → WhatsApp ─────────────────────────────── */
+  var enquiryForm = document.getElementById('enquiry-form');
+  if (enquiryForm) {
+    enquiryForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name    = (enquiryForm.querySelector('#enq-name')    || {}).value || '';
+      var phone   = (enquiryForm.querySelector('#enq-phone')   || {}).value || '';
+      var email   = (enquiryForm.querySelector('#enq-email')   || {}).value || '';
+      var subject = (enquiryForm.querySelector('#enq-subject') || {}).value || '';
+      var message = (enquiryForm.querySelector('#enq-message') || {}).value || '';
+
+      if (!name || !phone || !subject || !message) {
+        var firstInvalid = enquiryForm.querySelector(':invalid');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      var lines = [
+        'Hello Fumitech-Pyto Services,',
+        '',
+        'I have an enquiry:',
+        '',
+        '• Name: '    + name,
+        '• Phone: '   + phone,
+      ];
+      if (email)   lines.push('• Email: '   + email);
+      lines.push(  '• Subject: ' + subject);
+      lines.push(  '• Message: ' + message);
+      lines.push('', 'Please get back to me. Thank you!');
+
+      window.open(
+        'https://wa.me/254734865099?text=' + encodeURIComponent(lines.join('\n')),
+        '_blank', 'noopener,noreferrer'
+      );
+      enquiryForm.reset();
+    });
+  }
+
   /* ── Active nav link on scroll ──────────────────────────── */
   var sections = document.querySelectorAll('section[id], div[id="emergency-banner"]');
   var navLinks = document.querySelectorAll('.desktop-nav a, .mobile-nav a');
