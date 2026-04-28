@@ -219,6 +219,21 @@ function fumitech_register_post_types() {
         'show_in_rest'      => true,
     ]);
 
+    // Service category taxonomy
+    register_taxonomy('service_category', 'fumitech_service', [
+        'labels' => [
+            'name'          => 'Service Categories',
+            'singular_name' => 'Service Category',
+            'add_new_item'  => 'Add New Category',
+            'edit_item'     => 'Edit Category',
+            'menu_name'     => 'Categories',
+        ],
+        'hierarchical'  => true,
+        'public'        => true,
+        'rewrite'       => ['slug' => 'service-category'],
+        'show_in_rest'  => true,
+    ]);
+
     // Product category taxonomy
     register_taxonomy('product_category', 'fumitech_product', [
         'labels' => [
@@ -240,6 +255,20 @@ add_action('init', 'fumitech_register_post_types');
 add_action('after_switch_theme', function () {
     fumitech_register_post_types();
     flush_rewrite_rules();
+});
+
+
+// ── Seed service categories ──────────────────────────────────────────────────
+add_action('admin_init', function () {
+    if (get_option('fumitech_service_cats_seeded')) return;
+
+    $service_cats = ['Pest Control', 'Consultancy'];
+    foreach ($service_cats as $name) {
+        if (!term_exists($name, 'service_category')) {
+            wp_insert_term($name, 'service_category');
+        }
+    }
+    update_option('fumitech_service_cats_seeded', true);
 });
 
 
@@ -570,20 +599,43 @@ add_action('add_meta_boxes', function () {
 
 function fumitech_service_meta_cb($post) {
     wp_nonce_field('fumitech_service_save', 'fumitech_service_nonce');
-    $price    = get_post_meta($post->ID, '_fumitech_price', true);
-    $duration = get_post_meta($post->ID, '_fumitech_duration', true);
-    $icon     = get_post_meta($post->ID, '_fumitech_icon', true);
-    $wa_msg   = get_post_meta($post->ID, '_fumitech_wa_message', true);
+    $price     = get_post_meta($post->ID, '_fumitech_price', true);
+    $duration  = get_post_meta($post->ID, '_fumitech_duration', true);
+    $icon      = get_post_meta($post->ID, '_fumitech_icon', true);
+    $wa_msg    = get_post_meta($post->ID, '_fumitech_wa_message', true);
+    $sub_items = get_post_meta($post->ID, '_fumitech_sub_items', true);
+
+    $svc_cats       = get_terms(['taxonomy' => 'service_category', 'hide_empty' => false]);
+    $current_cat    = wp_get_object_terms($post->ID, 'service_category', ['fields' => 'ids']);
+    $current_cat_id = (!is_wp_error($current_cat) && !empty($current_cat)) ? (int) $current_cat[0] : 0;
     ?>
     <style>
         .fumitech-meta-table { width:100%; border-collapse:collapse; }
         .fumitech-meta-table th { width:200px; padding:12px 12px 12px 0; text-align:left; font-weight:600; vertical-align:top; color:#1e293b; }
         .fumitech-meta-table td { padding:8px 0; }
-        .fumitech-meta-table input[type=text] { width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; }
-        .fumitech-meta-table input[type=text]:focus { outline:none; border-color:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.15); }
+        .fumitech-meta-table input[type=text],
+        .fumitech-meta-table select,
+        .fumitech-meta-table textarea { width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; }
+        .fumitech-meta-table input[type=text]:focus,
+        .fumitech-meta-table select:focus,
+        .fumitech-meta-table textarea:focus { outline:none; border-color:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.15); }
         .fumitech-meta-table .desc { font-size:12px; color:#64748b; margin-top:4px; }
     </style>
     <table class="fumitech-meta-table">
+        <tr>
+            <th><label for="fumitech_svc_category">Service Category</label></th>
+            <td>
+                <select id="fumitech_svc_category" name="fumitech_svc_category">
+                    <option value="">— Select —</option>
+                    <?php if (!is_wp_error($svc_cats)) foreach ($svc_cats as $cat) : ?>
+                        <option value="<?php echo esc_attr($cat->term_id); ?>" <?php selected($current_cat_id, $cat->term_id); ?>>
+                            <?php echo esc_html($cat->name); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="desc">Groups services on the Services page (Pest Control or Consultancy).</p>
+            </td>
+        </tr>
         <tr>
             <th><label for="fumitech_price">Price / Starting From</label></th>
             <td>
@@ -604,6 +656,14 @@ function fumitech_service_meta_cb($post) {
                 <input type="text" id="fumitech_icon" name="fumitech_icon"
                        value="<?php echo esc_attr($icon); ?>" placeholder="e.g. 🐜"/>
                 <p class="desc">Emoji shown on the service card. Use any emoji.</p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="fumitech_sub_items">Sub-services / Sub-types</label></th>
+            <td>
+                <textarea id="fumitech_sub_items" name="fumitech_sub_items" rows="4"
+                          placeholder="One item per line, e.g.&#10;Conventional pesticide registration&#10;Bio-pesticides registration&#10;Bio-stimulants registration"><?php echo esc_textarea($sub_items); ?></textarea>
+                <p class="desc">One item per line. Shown as a bullet list on the service card. Leave blank to hide.</p>
             </td>
         </tr>
         <tr>
@@ -630,5 +690,19 @@ add_action('save_post_fumitech_service', function ($post_id) {
         if (isset($_POST[$field])) {
             update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
         }
+    }
+
+    // Sub-items (raw textarea — sanitize each line)
+    if (isset($_POST['fumitech_sub_items'])) {
+        $lines = array_filter(array_map('sanitize_text_field', explode("\n", $_POST['fumitech_sub_items'])));
+        update_post_meta($post_id, '_fumitech_sub_items', implode("\n", $lines));
+    }
+
+    // Service category
+    $cat_id = isset($_POST['fumitech_svc_category']) ? (int) $_POST['fumitech_svc_category'] : 0;
+    if ($cat_id) {
+        wp_set_object_terms($post_id, [$cat_id], 'service_category');
+    } else {
+        wp_set_object_terms($post_id, [], 'service_category');
     }
 });

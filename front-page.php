@@ -56,6 +56,19 @@ $slide_count  = count($hero_slides);
                 <span>24/7 Response</span>
             </div>
             <div class="hero-circle"></div>
+            <!-- Fumigation mist particles (purely decorative) -->
+            <span class="fumi-particle fumi-p-1"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-2"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-3"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-4"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-5"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-6"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-7"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-8"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-9"  aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-10" aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-11" aria-hidden="true"></span>
+            <span class="fumi-particle fumi-p-12" aria-hidden="true"></span>
         </div>
     </div>
 

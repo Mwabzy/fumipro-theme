@@ -786,10 +786,12 @@ button {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(12, 74, 110, 0.90) 0%,
-    rgba(3, 105, 161, 0.80) 50%,
-    rgba(2, 132, 199, 0.65) 100%
+    to right,
+    rgba(10, 60, 100, 0.95) 0%,
+    rgba(12, 74, 110, 0.88) 30%,
+    rgba(3, 105, 161, 0.55) 58%,
+    rgba(2, 132, 199, 0.18) 78%,
+    transparent 100%
   );
   z-index: 1;
   pointer-events: none;
@@ -918,6 +920,59 @@ button {
     opacity: 0.7;
   }
 }
+/* ── Fumigation mist particles ───────────────────────────── */
+@keyframes fumiUp {
+  0%   { opacity: 0;    transform: translateY(0)    translateX(0)    scale(0.3); }
+  18%  { opacity: 0.58; }
+  80%  { opacity: 0.18; }
+  100% { opacity: 0;    transform: translateY(-145px) translateX(0px)   scale(1.55); }
+}
+@keyframes fumiUpL {
+  0%   { opacity: 0;    transform: translateY(0)    translateX(0)    scale(0.3); }
+  18%  { opacity: 0.52; }
+  80%  { opacity: 0.15; }
+  100% { opacity: 0;    transform: translateY(-135px) translateX(-28px)  scale(1.45); }
+}
+@keyframes fumiUpR {
+  0%   { opacity: 0;    transform: translateY(0)    translateX(0)    scale(0.3); }
+  18%  { opacity: 0.52; }
+  80%  { opacity: 0.15; }
+  100% { opacity: 0;    transform: translateY(-135px) translateX(28px)   scale(1.45); }
+}
+@keyframes fumiUpLL {
+  0%   { opacity: 0;    transform: translateY(0)    translateX(0)    scale(0.3); }
+  18%  { opacity: 0.42; }
+  80%  { opacity: 0.12; }
+  100% { opacity: 0;    transform: translateY(-115px) translateX(-52px)  scale(1.3);  }
+}
+@keyframes fumiUpRR {
+  0%   { opacity: 0;    transform: translateY(0)    translateX(0)    scale(0.3); }
+  18%  { opacity: 0.42; }
+  80%  { opacity: 0.12; }
+  100% { opacity: 0;    transform: translateY(-115px) translateX(52px)   scale(1.3);  }
+}
+
+.fumi-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(186,230,253,0.2) 65%, transparent 100%);
+  pointer-events: none;
+  filter: blur(2.5px);
+  will-change: transform, opacity;
+}
+.fumi-p-1  { width:16px; height:16px; bottom:42%; left:47%; animation: fumiUp   4.0s ease-in 0.0s  infinite; }
+.fumi-p-2  { width:11px; height:11px; bottom:40%; left:53%; animation: fumiUpR  3.8s ease-in 0.6s  infinite; }
+.fumi-p-3  { width:19px; height:19px; bottom:44%; left:44%; animation: fumiUpL  4.5s ease-in 1.1s  infinite; }
+.fumi-p-4  { width: 9px; height: 9px; bottom:39%; left:56%; animation: fumiUpRR 3.6s ease-in 1.7s  infinite; }
+.fumi-p-5  { width:13px; height:13px; bottom:41%; left:50%; animation: fumiUpL  4.2s ease-in 2.3s  infinite; }
+.fumi-p-6  { width:22px; height:22px; bottom:45%; left:46%; animation: fumiUp   5.0s ease-in 0.4s  infinite; }
+.fumi-p-7  { width:10px; height:10px; bottom:38%; left:55%; animation: fumiUpLL 4.8s ease-in 1.9s  infinite; }
+.fumi-p-8  { width:15px; height:15px; bottom:42%; left:51%; animation: fumiUpR  4.3s ease-in 2.8s  infinite; }
+.fumi-p-9  { width: 8px; height: 8px; bottom:40%; left:45%; animation: fumiUpLL 3.9s ease-in 0.9s  infinite; }
+.fumi-p-10 { width:17px; height:17px; bottom:43%; left:54%; animation: fumiUpRR 4.7s ease-in 3.2s  infinite; }
+.fumi-p-11 { width:12px; height:12px; bottom:39%; left:49%; animation: fumiUpL  4.1s ease-in 1.5s  infinite; }
+.fumi-p-12 { width:20px; height:20px; bottom:46%; left:43%; animation: fumiUpR  5.2s ease-in 2.0s  infinite; }
+
 .hero-badge-float {
   position: absolute;
   display: flex;
@@ -2188,6 +2243,72 @@ button {
 /* ══════════════════════════════════════════════════════════════
    SERVICE CPT CARDS
 ══════════════════════════════════════════════════════════════ */
+
+/* ── Service category section grouping ──────────────────────── */
+.svc-cat-section {
+  margin-bottom: 56px;
+}
+.svc-cat-section:last-child {
+  margin-bottom: 0;
+}
+.svc-cat-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--sky-100);
+}
+.svc-cat-title {
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
+  color: var(--sky-800);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.svc-cat-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 22px;
+  background: var(--sky-500);
+  border-radius: 2px;
+}
+.svc-cat-desc {
+  color: var(--slate-500);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ── Sub-services bullet list inside a card ─────────────────── */
+.service-sub-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.service-sub-list li {
+  font-size: 13px;
+  color: var(--slate-600);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+.service-sub-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sky-400);
+}
+
 .service-cpt-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
