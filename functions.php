@@ -16,7 +16,7 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.2'
+        '3.4'
     );
 
     wp_enqueue_script(
@@ -36,6 +36,7 @@ function fumipro_setup() {
     add_theme_support('post-thumbnails');
     add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption']);
     add_theme_support('custom-logo');
+    add_theme_support('woocommerce');
 
     register_nav_menus([
         'primary' => __('Primary Navigation', 'fumipro'),
@@ -43,6 +44,9 @@ function fumipro_setup() {
     ]);
 }
 add_action('after_setup_theme', 'fumipro_setup');
+
+// Dequeue WooCommerce default styles that conflict with the theme
+add_filter('woocommerce_enqueue_styles', '__return_empty_array');
 
 
 // ── Remove default WP block styles ─────────────────────────────────────────

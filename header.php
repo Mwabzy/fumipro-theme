@@ -149,7 +149,7 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
                           </li>
                           <li class="has-submenu">
                             <a href="#">Chemicals &amp; Products <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
+                            <ul class="submenu submenu--two-col">
                               <li><a href="#">Industrial Chemicals</a></li>
                               <li><a href="#">Rodenticides</a></li>
                               <li><a href="#">Fungicides</a></li>

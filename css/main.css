@@ -402,9 +402,13 @@ button {
     transform 0.18s ease,
     visibility 0s linear 0s;
 }
+.desktop-nav .dropdown > li > a {
+  justify-content: flex-start;
+}
 .dropdown > li > a {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 8px 12px;
   color: var(--slate-700);
   font-size: 13px;
@@ -485,6 +489,19 @@ button {
 }
 .submenu li a::after {
   display: none;
+}
+
+/* Two-column submenu for long lists (e.g. Chemicals & Products) */
+.submenu--two-col {
+  column-count: 2;
+  column-gap: 0;
+  min-width: 340px;
+}
+.submenu--two-col li {
+  break-inside: avoid;
+}
+.submenu--two-col li a {
+  white-space: normal;
 }
 
 /* ── Mobile accordion nav ────────────────────────────────── */
@@ -1807,8 +1824,10 @@ button {
 .footer-logo-img {
   height: 64px;
   width: auto;
+  max-width: 180px;
   display: block;
   object-fit: contain;
+  filter: brightness(0) invert(1);
   transition: opacity var(--duration) var(--ease);
 }
 .footer-logo:hover .footer-logo-img {
