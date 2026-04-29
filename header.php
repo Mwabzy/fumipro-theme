@@ -210,7 +210,7 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
                         </ul>
                       </li>
 
-                      <li><a href="' . esc_url($h . 'shop') . '">Shop</a></li>
+                      <li><a href="' . esc_url($h . 'products') . '">Shop</a></li>
                       <li><a href="' . esc_url($h . '#contact') . '">Contact Us</a></li>
                     </ul>';
                 },

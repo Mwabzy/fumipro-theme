@@ -16,7 +16,7 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.4'
+        '3.5'
     );
 
     wp_enqueue_script(
@@ -48,6 +48,14 @@ add_action('after_setup_theme', 'fumipro_setup');
 // Dequeue WooCommerce default styles that conflict with the theme
 add_filter('woocommerce_enqueue_styles', '__return_empty_array');
 
+// Redirect WooCommerce /shop/ to the custom products archive
+add_action('template_redirect', function () {
+    if (function_exists('is_shop') && is_shop()) {
+        wp_redirect(home_url('/products/'), 301);
+        exit;
+    }
+});
+
 
 // ── Remove default WP block styles ─────────────────────────────────────────
 add_action('wp_enqueue_scripts', function () {
@@ -57,7 +65,7 @@ add_action('wp_enqueue_scripts', function () {
 }, 100);
 
 
-// ── Hero Slides admin menu ───────────────────────────────────────────────────
+// ── Admin menus ──────────────────────────────────────────────────────────────
 add_action('admin_menu', function () {
     add_menu_page(
         'Hero Carousel',
@@ -68,18 +76,29 @@ add_action('admin_menu', function () {
         'dashicons-images-alt2',
         4
     );
+    add_menu_page(
+        'Homepage Images',
+        'Homepage Images',
+        'manage_options',
+        'fumitech-homepage-images',
+        'fumitech_homepage_images_page',
+        'dashicons-format-image',
+        5
+    );
 });
 
 add_action('admin_enqueue_scripts', function ($hook) {
-    if ($hook !== 'toplevel_page_fumitech-hero-slides') return;
+    if (!in_array($hook, ['toplevel_page_fumitech-hero-slides', 'toplevel_page_fumitech-homepage-images'])) return;
     wp_enqueue_media();
-    wp_enqueue_script(
-        'fumitech-hero-admin',
-        get_template_directory_uri() . '/js/hero-admin.js',
-        ['jquery'],
-        '1.0',
-        true
-    );
+    if ($hook === 'toplevel_page_fumitech-hero-slides') {
+        wp_enqueue_script(
+            'fumitech-hero-admin',
+            get_template_directory_uri() . '/js/hero-admin.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
+    }
 });
 
 function fumitech_hero_slides_page() {
@@ -710,3 +729,137 @@ add_action('save_post_fumitech_service', function ($post_id) {
         wp_set_object_terms($post_id, [], 'service_category');
     }
 });
+
+
+// ── Homepage Images admin page ────────────────────────────────────────────────
+function fumitech_homepage_images_page() {
+    $saved = false;
+
+    if (isset($_POST['fumitech_hp_images_save']) &&
+        isset($_POST['fumitech_hp_images_nonce']) &&
+        wp_verify_nonce($_POST['fumitech_hp_images_nonce'], 'fumitech_hp_images_save') &&
+        current_user_can('manage_options')) {
+
+        $cards = [
+            'about' => ['id' => 'fumitech_about_card_img_id', 'url' => 'fumitech_about_card_img_url'],
+            'why'   => ['id' => 'fumitech_why_card_img_id',   'url' => 'fumitech_why_card_img_url'],
+        ];
+        foreach ($cards as $card) {
+            $att_id = absint($_POST[$card['id']] ?? 0);
+            update_option($card['id'], $att_id);
+            update_option($card['url'], $att_id ? wp_get_attachment_image_url($att_id, 'large') : '');
+        }
+        $saved = true;
+    }
+
+    $about_id  = (int) get_option('fumitech_about_card_img_id', 0);
+    $about_url = get_option('fumitech_about_card_img_url', '');
+    $why_id    = (int) get_option('fumitech_why_card_img_id', 0);
+    $why_url   = get_option('fumitech_why_card_img_url', '');
+    ?>
+    <div class="wrap">
+        <h1 style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:26px;">🖼</span> Homepage Card Images
+        </h1>
+        <?php if ($saved) : ?>
+            <div class="notice notice-success is-dismissible"><p><strong>Images saved!</strong></p></div>
+        <?php endif; ?>
+        <p style="color:#64748b;max-width:640px;margin-bottom:28px;">
+            Upload photos to replace the blue illustrated cards in the <strong>About Us</strong> and <strong>Why Choose Fumitech</strong> sections on the homepage.
+            If no image is set the original blue card design is shown.
+        </p>
+
+        <form method="post">
+            <?php wp_nonce_field('fumitech_hp_images_save', 'fumitech_hp_images_nonce'); ?>
+
+            <table class="form-table" style="max-width:700px;">
+
+                <!-- About Us card -->
+                <tr>
+                    <th style="padding-top:20px;font-size:15px;" colspan="2">
+                        📌 About Us Card <span style="font-weight:400;color:#64748b;font-size:13px;">— shown in the "We Are Fumitech Services Limited" section</span>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="fhp-preview" id="fhp-about-preview" style="<?php echo $about_url ? '' : 'display:none;'; ?>margin-bottom:12px;">
+                            <img src="<?php echo esc_url($about_url); ?>" id="fhp-about-img"
+                                 style="max-width:320px;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;">
+                        </div>
+                        <input type="hidden" name="fumitech_about_card_img_id" id="fhp-about-id" value="<?php echo esc_attr($about_id); ?>">
+                        <input type="hidden" name="fumitech_about_card_img_url" id="fhp-about-url" value="<?php echo esc_url($about_url); ?>">
+                        <button type="button" class="button button-secondary fhp-upload-btn" data-target="about" style="margin-right:8px;">
+                            <?php echo $about_url ? 'Change Image' : 'Upload Image'; ?>
+                        </button>
+                        <?php if ($about_url) : ?>
+                        <button type="button" class="button fhp-remove-btn" data-target="about">Remove</button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+
+                <!-- Why Choose Us card -->
+                <tr>
+                    <th style="padding-top:28px;font-size:15px;" colspan="2">
+                        📌 Why Choose Fumitech Card <span style="font-weight:400;color:#64748b;font-size:13px;">— shown in the "Trusted by Thousands" section</span>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="fhp-preview" id="fhp-why-preview" style="<?php echo $why_url ? '' : 'display:none;'; ?>margin-bottom:12px;">
+                            <img src="<?php echo esc_url($why_url); ?>" id="fhp-why-img"
+                                 style="max-width:320px;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;">
+                        </div>
+                        <input type="hidden" name="fumitech_why_card_img_id" id="fhp-why-id" value="<?php echo esc_attr($why_id); ?>">
+                        <input type="hidden" name="fumitech_why_card_img_url" id="fhp-why-url" value="<?php echo esc_url($why_url); ?>">
+                        <button type="button" class="button button-secondary fhp-upload-btn" data-target="why" style="margin-right:8px;">
+                            <?php echo $why_url ? 'Change Image' : 'Upload Image'; ?>
+                        </button>
+                        <?php if ($why_url) : ?>
+                        <button type="button" class="button fhp-remove-btn" data-target="why">Remove</button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+
+            </table>
+
+            <p style="margin-top:28px;">
+                <button type="submit" name="fumitech_hp_images_save" class="button button-primary" style="height:38px;font-size:14px;">
+                    Save Images
+                </button>
+            </p>
+        </form>
+    </div>
+
+    <script>
+    (function($) {
+        var frames = {};
+
+        $('.fhp-upload-btn').on('click', function() {
+            var target = $(this).data('target');
+            if (frames[target]) { frames[target].open(); return; }
+            frames[target] = wp.media({
+                title: 'Select Card Image',
+                button: { text: 'Use this image' },
+                multiple: false,
+                library: { type: 'image' }
+            });
+            frames[target].on('select', function() {
+                var att = frames[target].state().get('selection').first().toJSON();
+                $('#fhp-' + target + '-id').val(att.id);
+                $('#fhp-' + target + '-url').val(att.url);
+                $('#fhp-' + target + '-img').attr('src', att.url);
+                $('#fhp-' + target + '-preview').show();
+            });
+            frames[target].open();
+        });
+
+        $('.fhp-remove-btn').on('click', function() {
+            var target = $(this).data('target');
+            $('#fhp-' + target + '-id').val('');
+            $('#fhp-' + target + '-url').val('');
+            $('#fhp-' + target + '-preview').hide();
+        });
+    })(jQuery);
+    </script>
+    <?php
+}

@@ -389,13 +389,17 @@ if ($featured_products->have_posts()) : ?>
 <section class="section section--white" id="about">
     <div class="section-inner about-teaser-inner">
         <div class="about-teaser-visual" aria-hidden="true">
-            <div class="about-teaser-img-box">
+            <?php $about_card_img = get_option('fumitech_about_card_img_url', ''); ?>
+            <div class="about-teaser-img-box<?php echo $about_card_img ? ' about-teaser-img-box--photo' : ''; ?>"
+                 <?php if ($about_card_img) echo 'style="background-image:url(' . esc_url($about_card_img) . ');background-size:cover;background-position:center;"'; ?>>
+                <?php if (!$about_card_img) : ?>
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
                     <path d="M40 14C30 28 20 30 14 28C14 42 22 56 40 62C58 56 66 42 66 28C60 30 50 28 40 14Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
                     <polyline points="28,42 36,50 54,32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 </svg>
                 <p class="about-teaser-img-label">Fumitech Services</p>
+                <?php endif; ?>
             </div>
             <div class="about-teaser-stats">
                 <div class="about-stat"><strong>10+</strong><span>Years in Business</span></div>
@@ -423,7 +427,10 @@ if ($featured_products->have_posts()) : ?>
 <section class="section section--sky-light" id="why-us">
     <div class="section-inner why-inner">
         <div class="why-visual" aria-hidden="true">
-            <div class="why-img-box">
+            <?php $why_card_img = get_option('fumitech_why_card_img_url', ''); ?>
+            <div class="why-img-box<?php echo $why_card_img ? ' why-img-box--photo' : ''; ?>"
+                 <?php if ($why_card_img) echo 'style="background-image:url(' . esc_url($why_card_img) . ');background-size:cover;background-position:center;"'; ?>>
+                <?php if (!$why_card_img) : ?>
                 <div class="why-img-content">
                     <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
@@ -437,6 +444,7 @@ if ($featured_products->have_posts()) : ?>
                     <strong>10+</strong>
                     <span>Years Serving Nairobi</span>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
         <div class="why-text">
