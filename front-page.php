@@ -113,6 +113,22 @@ $slide_count  = count($hero_slides);
 <!-- ══════════════════════════════════════════════
      SERVICES
 ══════════════════════════════════════════════════ -->
+<?php
+/* ── Try to load Pest Control services from CPT ─────────────────────────── */
+$_hp_pc_term  = get_term_by('name', 'Pest Control', 'service_category');
+$_hp_svc_args = [
+    'post_type'   => 'fumitech_service',
+    'numberposts' => 6,
+    'orderby'     => 'menu_order',
+    'order'       => 'ASC',
+];
+if ($_hp_pc_term && !is_wp_error($_hp_pc_term)) {
+    $_hp_svc_args['tax_query'] = [['taxonomy' => 'service_category', 'field' => 'term_id', 'terms' => $_hp_pc_term->term_id]];
+}
+$_hp_services    = get_posts($_hp_svc_args);
+$_hp_use_dynamic = !empty($_hp_services);
+$_svc_url        = get_post_type_archive_link('fumitech_service') ?: home_url('/services');
+?>
 <section class="section section--white" id="services">
     <div class="section-inner">
         <div class="section-header">
@@ -122,49 +138,177 @@ $slide_count  = count($hero_slides);
         </div>
         <div class="services-grid">
 
-            <div class="service-card" id="svc-termite">
-                <div class="service-icon">&#x1F41C;</div>
-                <h3>Termite Control</h3>
-                <p>Eliminate termite colonies before they cause serious structural damage to your property.</p>
+            <?php if ($_hp_use_dynamic) :
+                foreach ($_hp_services as $_hp_svc) :
+                    $_hp_icon    = get_post_meta($_hp_svc->ID, '_fumitech_icon', true) ?: '🛡️';
+                    $_hp_excerpt = $_hp_svc->post_excerpt ?: wp_trim_words(strip_tags($_hp_svc->post_content), 20, '');
+                    $_hp_link    = esc_url($_svc_url . '#service-' . $_hp_svc->ID);
+            ?>
+            <div class="service-card" id="svc-<?php echo esc_attr($_hp_svc->post_name); ?>">
+                <div class="service-icon"><?php echo esc_html($_hp_icon); ?></div>
+                <h3><?php echo esc_html($_hp_svc->post_title); ?></h3>
+                <?php if ($_hp_excerpt) : ?>
+                    <p><?php echo esc_html($_hp_excerpt); ?></p>
+                <?php endif; ?>
+                <a href="<?php echo $_hp_link; ?>" class="card-link">Learn more &rarr;</a>
+            </div>
+            <?php endforeach;
+
+            else : /* ── Static fallback ─────────────────────────────── */ ?>
+
+
+            <div class="service-card" id="svc-pubhealth">
+                <div class="service-icon">&#x1F9BA;</div>
+                <h3>Public Health Pest Management</h3>
+                <p>Vector control programs targeting disease-carrying pests — mosquitoes, flies, and rodents — in communities and public spaces.</p>
                 <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
             </div>
 
-            <div class="service-card" id="svc-rodent">
-                <div class="service-icon">&#x1F400;</div>
-                <h3>Rodent Extermination</h3>
-                <p>Complete rat and mice removal using safe, humane trapping and exclusion methods.</p>
+            <div class="service-card" id="svc-structural">
+                <div class="service-icon">&#x1F3D7;&#xFE0F;</div>
+                <h3>Structural Pest Management</h3>
+                <p>Pre-construction and post-construction treatments protecting buildings from termites, wood borers, and soil-dwelling pests.</p>
                 <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
             </div>
 
-            <div class="service-card" id="svc-bedbug">
-                <div class="service-icon">&#x1F6CF;&#xFE0F;</div>
-                <h3>Bed Bug Treatment</h3>
-                <p>Heat treatment and chemical solutions that eliminate bed bugs at every life stage.</p>
-                <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
+            <div class="service-card" id="svc-fumigation">
+                <div class="service-icon">&#x1F33F;</div>
+                <h3>Agricultural Fumigation</h3>
+                <p>Pre-shipment and post-harvest fumigation for flowers, fruits, vegetables, and grains. KEPHIS-compliant and export-ready.</p>
+                <a href="<?php echo esc_url(home_url('/#agri-fumigation')); ?>" class="card-link">Learn more &rarr;</a>
             </div>
 
-            <div class="service-card" id="svc-cockroach">
-                <div class="service-icon">&#x1F98B;</div>
-                <h3>Cockroach Control</h3>
-                <p>Targeted gel baits and sprays that wipe out cockroach infestations for good.</p>
-                <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
+            <?php endif; ?>
+
+        </div>
+
+        <?php if ($_hp_use_dynamic) : ?>
+        <div style="text-align:center;margin-top:40px;">
+            <a href="<?php echo esc_url($_svc_url); ?>" class="btn-primary">View All Services &rarr;</a>
+        </div>
+        <?php endif; ?>
+
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     WHO WE SERVE
+══════════════════════════════════════════════════ -->
+<section class="section section--sky-light" id="sectors">
+    <div class="section-inner">
+        <div class="section-header">
+            <span class="section-label">Who We Serve</span>
+            <h2 class="section-title">Trusted Across Every Industry</h2>
+            <p class="section-sub">From family homes to large commercial operations, we deliver tailored pest management solutions to every sector.</p>
+        </div>
+        <div class="sectors-grid">
+
+            <div class="sector-card sector-card--featured">
+                <div class="sector-icon">&#x1F33E;</div>
+                <h3>Agriculture</h3>
+                <p>Pre-shipment and post-harvest fumigation for cut flowers, fresh fruits, vegetables, and stored grains. KEPHIS-compliant &amp; export-ready.</p>
+                <a href="<?php echo esc_url(home_url('/#agri-fumigation')); ?>" class="sector-link">Learn more &rarr;</a>
             </div>
 
-            <div class="service-card" id="svc-spider">
-                <div class="service-icon">&#x1F577;&#xFE0F;</div>
-                <h3>Spider &amp; Insect Control</h3>
-                <p>Safe removal of spiders, ants, fleas, and other crawling insects from your space.</p>
-                <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F3ED;</div>
+                <h3>Food Facilities</h3>
+                <p>Grain stores, mills, food processing plants, and cold storage units — protecting perishables and inventory from pest infestation.</p>
             </div>
 
-            <div class="service-card" id="svc-commercial">
-                <div class="service-icon">&#x1F3E2;</div>
-                <h3>Commercial Fumigation</h3>
-                <p>Full-premises fumigation for warehouses, restaurants, hotels, and offices.</p>
-                <a href="<?php echo esc_url(home_url('/services')); ?>" class="card-link">Learn more &rarr;</a>
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F3E5;</div>
+                <h3>Healthcare Facilities</h3>
+                <p>Hospitals and clinics require strict hygiene standards. We deliver discreet, WHO-approved pest control meeting infection control protocols.</p>
+            </div>
+
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F37D;&#xFE0F;</div>
+                <h3>Hotels &amp; Restaurants</h3>
+                <p>Protect your reputation with scheduled pest management programs for hospitality establishments and food service operations.</p>
+            </div>
+
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F3DB;&#xFE0F;</div>
+                <h3>Public Institutions</h3>
+                <p>Schools, government offices, and public spaces fumigated with minimal disruption — keeping communities safe and compliant.</p>
+            </div>
+
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F4BC;</div>
+                <h3>Private Institutions</h3>
+                <p>Corporate offices, banks, and private facilities served with tailored, confidential pest management plans and service reports.</p>
+            </div>
+
+            <div class="sector-card">
+                <div class="sector-icon">&#x1F3EA;</div>
+                <h3>Industries &amp; Retail Stores</h3>
+                <p>Factories, warehouses, and retail stores. Safeguard stock, equipment, and workspaces from pest damage and regulatory non-compliance.</p>
             </div>
 
         </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     AGRICULTURAL FUMIGATION CALLOUT
+══════════════════════════════════════════════════ -->
+<section class="section agri-fumi-section" id="agri-fumigation">
+    <div class="section-inner agri-fumi-inner">
+
+        <div class="agri-fumi-text">
+            <span class="section-label section-label--light">Speciality Service</span>
+            <h2 class="section-title agri-fumi-title">Flowers, Fruits &amp; Vegetable Fumigation</h2>
+            <p class="agri-fumi-intro">Kenya is one of the world's leading exporters of cut flowers and fresh produce. Meeting international phytosanitary requirements isn't optional — it's the difference between a shipment clearing customs and one being turned back at the border.</p>
+            <p class="agri-fumi-intro">Fumitech Services Limited provides KEPHIS-compliant pre-shipment and post-harvest fumigation treatments designed specifically for horticulture and agriculture operations.</p>
+            <ul class="agri-checklist">
+                <li>Pre-shipment fumigation for cut flowers, fresh fruits &amp; vegetables</li>
+                <li>Post-harvest grain, seed &amp; cereal storage fumigation</li>
+                <li>Approved fumigants: Methyl Bromide, Aluminium Phosphide &amp; Magnesium Phosphine</li>
+                <li>Cold room &amp; controlled atmosphere facility treatment</li>
+                <li>Quarantine pest treatment &amp; phytosanitary certificate support</li>
+                <li>Fumigation sheets, gas monitoring &amp; safety equipment on-site</li>
+                <li>Compliance with KEPHIS, EPPO, and importing-country standards</li>
+            </ul>
+            <div class="agri-fumi-btns">
+                <button type="button" class="btn-white" data-modal="book-now">Book Inspection</button>
+                <a href="tel:+254734865099" class="btn-outline-white">&#x1F4DE; Call Now</a>
+            </div>
+        </div>
+
+        <div class="agri-fumi-visual" aria-hidden="true">
+            <div class="agri-fumi-badge-wrap">
+                <div class="agri-badge agri-badge--1">
+                    <span class="agri-badge-icon">&#x1F337;</span>
+                    <div>
+                        <strong>Cut Flowers</strong>
+                        <span>Roses, Carnations, Lilies</span>
+                    </div>
+                </div>
+                <div class="agri-badge agri-badge--2">
+                    <span class="agri-badge-icon">&#x1F353;</span>
+                    <div>
+                        <strong>Fresh Produce</strong>
+                        <span>Fruits &amp; Vegetables</span>
+                    </div>
+                </div>
+                <div class="agri-badge agri-badge--3">
+                    <span class="agri-badge-icon">&#x1F33E;</span>
+                    <div>
+                        <strong>Stored Grains</strong>
+                        <span>Cereals, Seeds, Pulses</span>
+                    </div>
+                </div>
+                <div class="agri-badge agri-badge--4">
+                    <span class="agri-badge-icon">&#x2705;</span>
+                    <div>
+                        <strong>KEPHIS Compliant</strong>
+                        <span>Export-ready treatment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -269,7 +413,6 @@ if ($featured_products->have_posts()) : ?>
                 <span class="about-badge">&#x2714; Fully Insured</span>
                 <span class="about-badge">&#x2714; 24/7 Response</span>
             </div>
-            <a href="<?php echo esc_url(home_url('/about')); ?>" class="btn-primary" style="margin-top:24px;">Read Our Full Story &rarr;</a>
         </div>
     </div>
 </section>
@@ -318,7 +461,6 @@ if ($featured_products->have_posts()) : ?>
                     <div><strong>24/7 Emergency Response</strong><p>Severe infestations don't wait — neither do we.</p></div>
                 </li>
             </ul>
-            <a href="<?php echo esc_url(home_url('/about')); ?>" class="btn-primary" id="why-learn-btn">Learn About Us</a>
         </div>
     </div>
 </section>

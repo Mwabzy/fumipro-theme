@@ -43,6 +43,31 @@
 <!-- ══════════════════════════════════════════════
      NAVBAR
 ══════════════════════════════════════════════════ -->
+<?php
+/* ── Service nav data (grouped by service_category) ─────────────────────── */
+$_nav_svc_cats = get_terms(['taxonomy' => 'service_category', 'hide_empty' => false, 'orderby' => 'name']);
+$_nav_svc_data = [];  // [ 'Category Name' => [ ['id'=>, 'title'=>, 'slug'=>], … ] ]
+if (!empty($_nav_svc_cats) && !is_wp_error($_nav_svc_cats)) {
+    foreach ($_nav_svc_cats as $_nc) {
+        $_nc_posts = get_posts([
+            'post_type'   => 'fumitech_service',
+            'numberposts' => -1,
+            'orderby'     => 'menu_order',
+            'order'       => 'ASC',
+            'tax_query'   => [['taxonomy' => 'service_category', 'field' => 'term_id', 'terms' => $_nc->term_id]],
+        ]);
+        if (!empty($_nc_posts)) {
+            $_nav_svc_data[$_nc->name] = array_map(fn($p) => [
+                'id'    => $p->ID,
+                'title' => $p->post_title,
+                'slug'  => $p->post_name,
+            ], $_nc_posts);
+        }
+    }
+}
+$_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('/services');
+?>
+
 <header class="site-header" id="site-header">
     <div class="header-inner">
 
@@ -63,8 +88,46 @@
                 'theme_location' => 'primary',
                 'container'      => false,
                 'items_wrap'     => '<ul class="nav-list">%3$s</ul>',
-                'fallback_cb'    => function() {
+                'fallback_cb'    => function() use ($_nav_svc_data, $_svc_archive_url) {
                     $h = home_url('/');
+
+                    /* ── Build Services dropdown HTML ─────────────────── */
+                    $svc_dd = '';
+                    if (!empty($_nav_svc_data)) {
+                        foreach ($_nav_svc_data as $cat_name => $items) {
+                            $svc_dd .= '<li class="has-submenu"><a href="#">' . esc_html($cat_name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a><ul class="submenu">';
+                            foreach ($items as $item) {
+                                $svc_dd .= '<li><a href="' . esc_url($_svc_archive_url . '#service-' . $item['id']) . '">' . esc_html($item['title']) . '</a></li>';
+                            }
+                            $svc_dd .= '</ul></li>';
+                        }
+                    } else {
+                        /* Static fallback — Pest Control links to homepage anchors */
+                        $svc_dd = '
+                          <li class="has-submenu">
+                            <a href="#">Pest Control <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                            <ul class="submenu">
+                              <li><a href="' . esc_url($h . '#svc-termite') . '">Termite Control</a></li>
+                              <li><a href="' . esc_url($h . '#svc-rodent') . '">Rodent Extermination</a></li>
+                              <li><a href="' . esc_url($h . '#svc-bedbug') . '">Bed Bug Treatment</a></li>
+                              <li><a href="' . esc_url($h . '#svc-cockroach') . '">Cockroach Control</a></li>
+                              <li><a href="' . esc_url($h . '#svc-spider') . '">Spider &amp; Insect Control</a></li>
+                              <li><a href="' . esc_url($h . '#svc-commercial') . '">Commercial Fumigation</a></li>
+                              <li><a href="' . esc_url($h . '#svc-pubhealth') . '">Public Health Pest Management</a></li>
+                              <li><a href="' . esc_url($h . '#svc-structural') . '">Structural Pest Management</a></li>
+                              <li><a href="' . esc_url($h . '#agri-fumigation') . '">Agricultural Fumigation</a></li>
+                            </ul>
+                          </li>
+                          <li class="has-submenu">
+                            <a href="#">Consultancy <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                            <ul class="submenu">
+                              <li><a href="' . esc_url($h . 'services') . '">Pesticide Registration</a></li>
+                              <li><a href="' . esc_url($h . 'services') . '">Product Development</a></li>
+                              <li><a href="' . esc_url($h . 'services') . '">Regulatory Policy Insights</a></li>
+                            </ul>
+                          </li>';
+                    }
+
                     echo '
                     <ul class="nav-list">
                       <li><a href="' . esc_url($h) . '">Home</a></li>
@@ -106,11 +169,9 @@
                       </li>
 
                       <li class="has-dropdown">
-                        <a href="' . esc_url($h . 'services') . '">Services <span class="nav-arrow">&#9660;</span></a>
+                        <a href="' . esc_url($_svc_archive_url) . '">Services <span class="nav-arrow">&#9660;</span></a>
                         <ul class="dropdown">
-                          <li><a href="#">Public Health Pest Management</a></li>
-                          <li><a href="#">Structural Pest Management</a></li>
-                          <li><a href="#">Fumigation Services</a></li>
+                          ' . $svc_dd . '
                         </ul>
                       </li>
 
@@ -228,13 +289,57 @@
         <!-- Services -->
         <div class="mob-section">
             <div class="mob-header">
-                <a href="<?php echo esc_url(home_url('/services')); ?>">Services</a>
+                <a href="<?php echo esc_url($_svc_archive_url); ?>">Services</a>
                 <button class="mob-toggle" aria-expanded="false">+</button>
             </div>
             <div class="mob-dropdown">
-                <a href="#">Public Health Pest Management</a>
-                <a href="#">Structural Pest Management</a>
-                <a href="#">Fumigation Services</a>
+                <?php if (!empty($_nav_svc_data)) :
+                    foreach ($_nav_svc_data as $mob_cat => $mob_items) : ?>
+                <div class="mob-section">
+                    <div class="mob-header">
+                        <a href="#"><?php echo esc_html($mob_cat); ?></a>
+                        <button class="mob-toggle" aria-expanded="false">+</button>
+                    </div>
+                    <div class="mob-dropdown">
+                        <?php foreach ($mob_items as $mob_item) : ?>
+                        <a href="<?php echo esc_url($_svc_archive_url . '#service-' . $mob_item['id']); ?>">
+                            <?php echo esc_html($mob_item['title']); ?>
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                    <?php endforeach;
+                else : ?>
+                <!-- Static fallback -->
+                <div class="mob-section">
+                    <div class="mob-header">
+                        <a href="#">Pest Control</a>
+                        <button class="mob-toggle" aria-expanded="false">+</button>
+                    </div>
+                    <div class="mob-dropdown">
+                        <a href="<?php echo esc_url(home_url('/#svc-termite')); ?>">Termite Control</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-rodent')); ?>">Rodent Extermination</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-bedbug')); ?>">Bed Bug Treatment</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-cockroach')); ?>">Cockroach Control</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-spider')); ?>">Spider &amp; Insect Control</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-commercial')); ?>">Commercial Fumigation</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-pubhealth')); ?>">Public Health Pest Management</a>
+                        <a href="<?php echo esc_url(home_url('/#svc-structural')); ?>">Structural Pest Management</a>
+                        <a href="<?php echo esc_url(home_url('/#agri-fumigation')); ?>">Agricultural Fumigation</a>
+                    </div>
+                </div>
+                <div class="mob-section">
+                    <div class="mob-header">
+                        <a href="#">Consultancy</a>
+                        <button class="mob-toggle" aria-expanded="false">+</button>
+                    </div>
+                    <div class="mob-dropdown">
+                        <a href="<?php echo esc_url(home_url('/services')); ?>">Pesticide Registration</a>
+                        <a href="<?php echo esc_url(home_url('/services')); ?>">Product Development</a>
+                        <a href="<?php echo esc_url(home_url('/services')); ?>">Regulatory Policy Insights</a>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -327,20 +432,32 @@
                 <label for="book-service">Service Needed <span class="req">*</span></label>
                 <select id="book-service" name="service" required>
                     <option value="">Select a service&hellip;</option>
+                    <?php if (!empty($_nav_svc_data)) :
+                        foreach ($_nav_svc_data as $_modal_cat => $_modal_items) : ?>
+                        <optgroup label="<?php echo esc_attr($_modal_cat); ?>">
+                            <?php foreach ($_modal_items as $_modal_item) : ?>
+                            <option value="<?php echo esc_attr($_modal_item['title']); ?>"><?php echo esc_html($_modal_item['title']); ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endforeach;
+                    else : /* ── Static fallback ── */ ?>
                     <optgroup label="Pest Control">
                         <option>Termite Control</option>
                         <option>Rodent Extermination</option>
                         <option>Bed Bug Treatment</option>
                         <option>Cockroach Control</option>
                         <option>Spider &amp; Insect Control</option>
-                        <option>Mosquito Control</option>
-                    </optgroup>
-                    <optgroup label="Professional Services">
                         <option>Commercial Fumigation</option>
                         <option>Public Health Pest Management</option>
                         <option>Structural Pest Management</option>
-                        <option>Fumigation Services</option>
+                        <option>Agricultural Fumigation</option>
                     </optgroup>
+                    <optgroup label="Consultancy">
+                        <option>Consultancy on Pesticide Registration</option>
+                        <option>Product Development</option>
+                        <option>Regulatory Policy Insights</option>
+                    </optgroup>
+                    <?php endif; ?>
                     <option value="other">Other / Not sure</option>
                 </select>
             </div>

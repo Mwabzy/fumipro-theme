@@ -1034,6 +1034,239 @@ button {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   WHO WE SERVE — SECTORS GRID
+══════════════════════════════════════════════════════════════ */
+.sectors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+.sector-card {
+  background: var(--white);
+  border: 1.5px solid var(--sky-100);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  transition: box-shadow var(--duration) var(--ease), transform var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+.sector-card:hover {
+  box-shadow: 0 8px 28px rgba(14, 165, 233, 0.12);
+  transform: translateY(-3px);
+  border-color: var(--sky-300);
+}
+.sector-card--featured {
+  border-color: var(--sky-400);
+  background: linear-gradient(135deg, var(--sky-50) 0%, var(--white) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.sector-card--featured::before {
+  content: 'Featured';
+  position: absolute;
+  top: 14px;
+  right: -22px;
+  background: var(--sky-500);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 3px 28px;
+  transform: rotate(45deg);
+}
+.sector-icon {
+  font-size: 32px;
+  margin-bottom: 14px;
+  display: block;
+  line-height: 1;
+}
+.sector-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sky-900);
+  margin: 0 0 10px;
+}
+.sector-card p {
+  font-size: 13.5px;
+  color: var(--slate-500);
+  line-height: 1.65;
+  margin: 0 0 14px;
+}
+.sector-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sky-600);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease);
+}
+.sector-link:hover {
+  color: var(--sky-800);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AGRICULTURAL FUMIGATION CALLOUT
+══════════════════════════════════════════════════════════════ */
+.agri-fumi-section {
+  background: linear-gradient(135deg, var(--sky-900) 0%, var(--sky-700) 60%, var(--sky-600) 100%);
+  padding: 80px 5%;
+  position: relative;
+  overflow: hidden;
+}
+.agri-fumi-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.agri-fumi-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 64px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.agri-fumi-title {
+  color: var(--white) !important;
+  text-align: left !important;
+  margin-bottom: 20px;
+}
+.agri-fumi-intro {
+  color: rgba(255,255,255,0.80);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.agri-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agri-checklist li {
+  color: rgba(255,255,255,0.90);
+  font-size: 14px;
+  line-height: 1.55;
+  padding-left: 26px;
+  position: relative;
+}
+.agri-checklist li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--sky-300);
+  font-weight: 700;
+  font-size: 15px;
+}
+.agri-fumi-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.btn-white {
+  background: var(--white);
+  color: var(--sky-800);
+  border: 2px solid var(--white);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+.btn-white:hover {
+  background: var(--sky-50);
+  color: var(--sky-900);
+}
+.btn-outline-white {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255,255,255,0.55);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+}
+.btn-outline-white:hover {
+  border-color: var(--white);
+  background: rgba(255,255,255,0.08);
+}
+
+/* Agri visual badges */
+.agri-fumi-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.agri-fumi-badge-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+.agri-badge {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  backdrop-filter: blur(6px);
+  transition: background var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.agri-badge:hover {
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-2px);
+}
+.agri-badge-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.agri-badge strong {
+  display: block;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.agri-badge span {
+  display: block;
+  color: rgba(255,255,255,0.65);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .agri-fumi-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .agri-fumi-badge-wrap {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 600px) {
+  .sectors-grid {
+    grid-template-columns: 1fr;
+  }
+  .agri-fumi-badge-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
    EMERGENCY BANNER
 ══════════════════════════════════════════════════════════════ */
 .emergency-banner {
@@ -2243,6 +2476,13 @@ button {
 /* ══════════════════════════════════════════════════════════════
    SERVICE CPT CARDS
 ══════════════════════════════════════════════════════════════ */
+
+/* ── Anchor offset for sticky header ────────────────────────── */
+.service-cpt-card,
+.svc-cat-section,
+.service-card {
+  scroll-margin-top: calc(var(--header-total) + 24px);
+}
 
 /* ── Service category section grouping ──────────────────────── */
 .svc-cat-section {
