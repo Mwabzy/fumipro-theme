@@ -502,6 +502,7 @@ button {
 }
 .submenu--two-col li a {
   white-space: normal;
+  text-align: left;
 }
 
 /* ── Mobile accordion nav ────────────────────────────────── */

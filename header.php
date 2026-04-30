@@ -66,6 +66,20 @@ if (!empty($_nav_svc_cats) && !is_wp_error($_nav_svc_cats)) {
     }
 }
 $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('/services');
+
+/* ── Product nav data (parent categories + children) ────────────────────── */
+$_nav_prod_archive_url = get_post_type_archive_link('fumitech_product') ?: home_url('/products');
+$_nav_prod_parents     = get_terms(['taxonomy' => 'product_category', 'parent' => 0, 'hide_empty' => false, 'orderby' => 'name']);
+$_nav_prod_data        = [];
+if (!empty($_nav_prod_parents) && !is_wp_error($_nav_prod_parents)) {
+    foreach ($_nav_prod_parents as $_pp) {
+        $_pp_kids = get_terms(['taxonomy' => 'product_category', 'parent' => $_pp->term_id, 'hide_empty' => false, 'orderby' => 'name']);
+        $_nav_prod_data[] = [
+            'term'     => $_pp,
+            'children' => (!is_wp_error($_pp_kids) && !empty($_pp_kids)) ? $_pp_kids : [],
+        ];
+    }
+}
 ?>
 
 <header class="site-header" id="site-header">
@@ -74,7 +88,14 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
         <!-- Brand row: logo + mobile hamburger -->
         <div class="header-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo" id="site-logo">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech Services Limited" class="site-logo-img" id="site-logo-img">
+                <?php
+                $_logo_id  = (int) get_option('fumitech_logo_id', 0);
+                $_logo_url = $_logo_id
+                    ? (wp_get_attachment_image_url($_logo_id, 'full') ?: get_option('fumitech_logo_url', ''))
+                    : get_option('fumitech_logo_url', '');
+                if (!$_logo_url) $_logo_url = get_template_directory_uri() . '/images/logo.png';
+                ?>
+                <img src="<?php echo esc_url($_logo_url); ?>" alt="Fumitech Services Limited" class="site-logo-img" id="site-logo-img">
             </a>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
                 <span></span><span></span><span></span>
@@ -88,7 +109,7 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
                 'theme_location' => 'primary',
                 'container'      => false,
                 'items_wrap'     => '<ul class="nav-list">%3$s</ul>',
-                'fallback_cb'    => function() use ($_nav_svc_data, $_svc_archive_url) {
+                'fallback_cb'    => function() use ($_nav_svc_data, $_svc_archive_url, $_nav_prod_data, $_nav_prod_archive_url) {
                     $h = home_url('/');
 
                     /* ── Build Services dropdown HTML ─────────────────── */
@@ -128,43 +149,32 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
                           </li>';
                     }
 
+                    /* ── Build Products dropdown HTML ────────────────── */
+                    $prod_dd = '';
+                    foreach ($_nav_prod_data as $_pg) {
+                        $pt      = $_pg['term'];
+                        $kids    = $_pg['children'];
+                        $two_col = (count($kids) > 6) ? ' submenu--two-col' : '';
+                        $prod_dd .= '<li class="has-submenu"><a href="' . esc_url(get_term_link($pt)) . '">' . esc_html($pt->name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a>';
+                        if (!empty($kids)) {
+                            $prod_dd .= '<ul class="submenu' . $two_col . '">';
+                            foreach ($kids as $_kid) {
+                                $prod_dd .= '<li><a href="' . esc_url(get_term_link($_kid)) . '">' . esc_html($_kid->name) . '</a></li>';
+                            }
+                            $prod_dd .= '</ul>';
+                        }
+                        $prod_dd .= '</li>';
+                    }
+
                     echo '
                     <ul class="nav-list">
                       <li><a href="' . esc_url($h) . '">Home</a></li>
                       <li><a href="' . esc_url($h . '#about') . '">About Us</a></li>
 
                       <li class="has-dropdown">
-                        <a href="' . esc_url($h . 'products') . '">Products <span class="nav-arrow">&#9660;</span></a>
+                        <a href="' . esc_url($_nav_prod_archive_url) . '">Products <span class="nav-arrow">&#9660;</span></a>
                         <ul class="dropdown">
-                          <li class="has-submenu">
-                            <a href="#">Equipment <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="#">Thermal Foggers</a></li>
-                              <li><a href="#">Knapsack Sprayers</a></li>
-                              <li><a href="#">Protective Gear</a></li>
-                              <li><a href="#">Sealing Tarps</a></li>
-                              <li><a href="#">Bait Stations</a></li>
-                              <li><a href="#">Gas Measuring Equipment</a></li>
-                            </ul>
-                          </li>
-                          <li class="has-submenu">
-                            <a href="#">Chemicals &amp; Products <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu submenu--two-col">
-                              <li><a href="#">Industrial Chemicals</a></li>
-                              <li><a href="#">Rodenticides</a></li>
-                              <li><a href="#">Fungicides</a></li>
-                              <li><a href="#">Insecticides</a></li>
-                              <li><a href="#">Miticides</a></li>
-                              <li><a href="#">Insect Traps</a></li>
-                              <li><a href="#">Herbicides</a></li>
-                              <li><a href="#">Biologicals</a></li>
-                              <li><a href="#">Fumigants</a></li>
-                              <li><a href="#">Termiticides</a></li>
-                              <li><a href="#">Nematicides</a></li>
-                              <li><a href="#">Foliar</a></li>
-                              <li><a href="#">Disinfectants</a></li>
-                            </ul>
-                          </li>
+                          ' . $prod_dd . '
                         </ul>
                       </li>
 
@@ -244,45 +254,28 @@ $_svc_archive_url = get_post_type_archive_link('fumitech_service') ?: home_url('
         <!-- Products -->
         <div class="mob-section">
             <div class="mob-header">
-                <a href="<?php echo esc_url(home_url('/products')); ?>">Products</a>
+                <a href="<?php echo esc_url($_nav_prod_archive_url); ?>">Products</a>
                 <button class="mob-toggle" aria-expanded="false">+</button>
             </div>
             <div class="mob-dropdown">
+                <?php foreach ($_nav_prod_data as $_mob_pg) :
+                    $mob_pt   = $_mob_pg['term'];
+                    $mob_kids = $_mob_pg['children'];
+                ?>
                 <div class="mob-section">
                     <div class="mob-header">
-                        <a href="#">Equipment</a>
+                        <a href="<?php echo esc_url(get_term_link($mob_pt)); ?>"><?php echo esc_html($mob_pt->name); ?></a>
                         <button class="mob-toggle" aria-expanded="false">+</button>
                     </div>
+                    <?php if (!empty($mob_kids)) : ?>
                     <div class="mob-dropdown">
-                        <a href="#">Thermal Foggers</a>
-                        <a href="#">Knapsack Sprayers</a>
-                        <a href="#">Protective Gear</a>
-                        <a href="#">Sealing Tarps</a>
-                        <a href="#">Bait Stations</a>
-                        <a href="#">Gas Measuring Equipment</a>
+                        <?php foreach ($mob_kids as $_mob_kid) : ?>
+                        <a href="<?php echo esc_url(get_term_link($_mob_kid)); ?>"><?php echo esc_html($_mob_kid->name); ?></a>
+                        <?php endforeach; ?>
                     </div>
+                    <?php endif; ?>
                 </div>
-                <div class="mob-section">
-                    <div class="mob-header">
-                        <a href="#">Chemicals &amp; Products</a>
-                        <button class="mob-toggle" aria-expanded="false">+</button>
-                    </div>
-                    <div class="mob-dropdown">
-                        <a href="#">Industrial Chemicals</a>
-                        <a href="#">Rodenticides</a>
-                        <a href="#">Fungicides</a>
-                        <a href="#">Insecticides</a>
-                        <a href="#">Miticides</a>
-                        <a href="#">Insect Traps</a>
-                        <a href="#">Herbicides</a>
-                        <a href="#">Biologicals</a>
-                        <a href="#">Fumigants</a>
-                        <a href="#">Termiticides</a>
-                        <a href="#">Nematicides</a>
-                        <a href="#">Foliar</a>
-                        <a href="#">Disinfectants</a>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

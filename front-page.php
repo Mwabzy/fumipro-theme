@@ -389,7 +389,12 @@ if ($featured_products->have_posts()) : ?>
 <section class="section section--white" id="about">
     <div class="section-inner about-teaser-inner">
         <div class="about-teaser-visual" aria-hidden="true">
-            <?php $about_card_img = get_option('fumitech_about_card_img_url', ''); ?>
+            <?php
+            $about_card_img_id  = (int) get_option('fumitech_about_card_img_id', 0);
+            $about_card_img     = $about_card_img_id
+                ? ( wp_get_attachment_image_url($about_card_img_id, 'large') ?: get_option('fumitech_about_card_img_url', '') )
+                : get_option('fumitech_about_card_img_url', '');
+            ?>
             <div class="about-teaser-img-box<?php echo $about_card_img ? ' about-teaser-img-box--photo' : ''; ?>"
                  <?php if ($about_card_img) echo 'style="background-image:url(' . esc_url($about_card_img) . ');background-size:cover;background-position:center;"'; ?>>
                 <?php if (!$about_card_img) : ?>
@@ -427,7 +432,12 @@ if ($featured_products->have_posts()) : ?>
 <section class="section section--sky-light" id="why-us">
     <div class="section-inner why-inner">
         <div class="why-visual" aria-hidden="true">
-            <?php $why_card_img = get_option('fumitech_why_card_img_url', ''); ?>
+            <?php
+            $why_card_img_id = (int) get_option('fumitech_why_card_img_id', 0);
+            $why_card_img    = $why_card_img_id
+                ? ( wp_get_attachment_image_url($why_card_img_id, 'large') ?: get_option('fumitech_why_card_img_url', '') )
+                : get_option('fumitech_why_card_img_url', '');
+            ?>
             <div class="why-img-box<?php echo $why_card_img ? ' why-img-box--photo' : ''; ?>"
                  <?php if ($why_card_img) echo 'style="background-image:url(' . esc_url($why_card_img) . ');background-size:cover;background-position:center;"'; ?>>
                 <?php if (!$why_card_img) : ?>

@@ -16,7 +16,7 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.5'
+        '3.6'
     );
 
     wp_enqueue_script(
@@ -740,6 +740,11 @@ function fumitech_homepage_images_page() {
         wp_verify_nonce($_POST['fumitech_hp_images_nonce'], 'fumitech_hp_images_save') &&
         current_user_can('manage_options')) {
 
+        // Logo
+        $logo_att = absint($_POST['fumitech_logo_id'] ?? 0);
+        update_option('fumitech_logo_id', $logo_att);
+        update_option('fumitech_logo_url', $logo_att ? wp_get_attachment_image_url($logo_att, 'full') : '');
+
         $cards = [
             'about' => ['id' => 'fumitech_about_card_img_id', 'url' => 'fumitech_about_card_img_url'],
             'why'   => ['id' => 'fumitech_why_card_img_id',   'url' => 'fumitech_why_card_img_url'],
@@ -752,6 +757,8 @@ function fumitech_homepage_images_page() {
         $saved = true;
     }
 
+    $logo_id   = (int) get_option('fumitech_logo_id', 0);
+    $logo_url  = get_option('fumitech_logo_url', '');
     $about_id  = (int) get_option('fumitech_about_card_img_id', 0);
     $about_url = get_option('fumitech_about_card_img_url', '');
     $why_id    = (int) get_option('fumitech_why_card_img_id', 0);
@@ -759,20 +766,43 @@ function fumitech_homepage_images_page() {
     ?>
     <div class="wrap">
         <h1 style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:26px;">🖼</span> Homepage Card Images
+            <span style="font-size:26px;">🖼</span> Site Images &amp; Logo
         </h1>
         <?php if ($saved) : ?>
             <div class="notice notice-success is-dismissible"><p><strong>Images saved!</strong></p></div>
         <?php endif; ?>
         <p style="color:#64748b;max-width:640px;margin-bottom:28px;">
-            Upload photos to replace the blue illustrated cards in the <strong>About Us</strong> and <strong>Why Choose Fumitech</strong> sections on the homepage.
-            If no image is set the original blue card design is shown.
+            Upload the site logo and homepage card images. Changes take effect immediately after saving.
         </p>
 
         <form method="post">
             <?php wp_nonce_field('fumitech_hp_images_save', 'fumitech_hp_images_nonce'); ?>
 
             <table class="form-table" style="max-width:700px;">
+
+                <!-- Site Logo -->
+                <tr>
+                    <th style="padding-top:20px;font-size:15px;" colspan="2">
+                        🏷️ Site Logo <span style="font-weight:400;color:#64748b;font-size:13px;">— shown in the navigation bar</span>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="fhp-preview" id="fhp-logo-preview" style="<?php echo $logo_url ? '' : 'display:none;'; ?>margin-bottom:12px;">
+                            <img src="<?php echo esc_url($logo_url); ?>" id="fhp-logo-img"
+                                 style="max-height:80px;object-fit:contain;border-radius:6px;border:1px solid #e2e8f0;padding:8px;background:#fff;">
+                        </div>
+                        <input type="hidden" name="fumitech_logo_id"  id="fhp-logo-id"  value="<?php echo esc_attr($logo_id); ?>">
+                        <input type="hidden" name="fumitech_logo_url" id="fhp-logo-url" value="<?php echo esc_url($logo_url); ?>">
+                        <button type="button" class="button button-secondary fhp-upload-btn" data-target="logo" style="margin-right:8px;">
+                            <?php echo $logo_url ? 'Change Logo' : 'Upload Logo'; ?>
+                        </button>
+                        <?php if ($logo_url) : ?>
+                        <button type="button" class="button fhp-remove-btn" data-target="logo">Remove</button>
+                        <?php endif; ?>
+                        <p style="margin-top:8px;font-size:12px;color:#64748b;">Recommended: PNG or SVG with transparent background. If no logo is uploaded, the default logo.png file is used.</p>
+                    </td>
+                </tr>
 
                 <!-- About Us card -->
                 <tr>
