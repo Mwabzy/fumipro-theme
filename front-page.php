@@ -260,7 +260,7 @@ $_svc_url        = get_post_type_archive_link('fumitech_service') ?: home_url('/
             <span class="section-label section-label--light">Speciality Service</span>
             <h2 class="section-title agri-fumi-title">Flowers, Fruits &amp; Vegetable Fumigation</h2>
             <p class="agri-fumi-intro">Kenya is one of the world's leading exporters of cut flowers and fresh produce. Meeting international phytosanitary requirements isn't optional — it's the difference between a shipment clearing customs and one being turned back at the border.</p>
-            <p class="agri-fumi-intro">Fumitech Services Limited provides KEPHIS-compliant pre-shipment and post-harvest fumigation treatments designed specifically for horticulture and agriculture operations.</p>
+            <p class="agri-fumi-intro">Fumitech Phyto Services Limited provides KEPHIS-compliant pre-shipment and post-harvest fumigation treatments designed specifically for horticulture and agriculture operations.</p>
             <ul class="agri-checklist">
                 <li>Pre-shipment fumigation for cut flowers, fresh fruits &amp; vegetables</li>
                 <li>Post-harvest grain, seed &amp; cereal storage fumigation</li>
@@ -392,7 +392,7 @@ if ($featured_products->have_posts()) : ?>
             <?php
             $about_card_img_id  = (int) get_option('fumitech_about_card_img_id', 0);
             $about_card_img_tag = $about_card_img_id
-                ? wp_get_attachment_image($about_card_img_id, 'large', false, ['class' => 'card-img-fill', 'alt' => 'About Fumitech Services'])
+                ? wp_get_attachment_image($about_card_img_id, 'large', false, ['class' => 'card-img-fill', 'alt' => 'About Fumitech Phyto Services'])
                 : '';
             ?>
             <div class="about-teaser-img-box<?php echo $about_card_img_tag ? ' about-teaser-img-box--photo' : ''; ?>">
@@ -404,7 +404,7 @@ if ($featured_products->have_posts()) : ?>
                     <path d="M40 14C30 28 20 30 14 28C14 42 22 56 40 62C58 56 66 42 66 28C60 30 50 28 40 14Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
                     <polyline points="28,42 36,50 54,32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 </svg>
-                <p class="about-teaser-img-label">Fumitech Services</p>
+                <p class="about-teaser-img-label">Fumitech Phyto Services</p>
                 <?php endif; ?>
             </div>
             <div class="about-teaser-stats">
@@ -415,8 +415,8 @@ if ($featured_products->have_posts()) : ?>
         </div>
         <div class="about-teaser-text">
             <span class="section-label">About Us</span>
-            <h2 class="section-title" style="text-align:left;">We Are Fumitech Services Limited</h2>
-            <p class="about-teaser-body">Founded in Nairobi, Fumitech Services Limited is a fully licensed and certified pest control company serving homes, businesses, and industries across Kenya. Our team of trained professionals uses WHO&#8209;approved, eco&#8209;friendly products to deliver fast, effective, and lasting pest control solutions.</p>
+            <h2 class="section-title" style="text-align:left;">We Are Fumitech Phyto Services Limited</h2>
+            <p class="about-teaser-body">Founded in Nairobi, Fumitech Phyto Services Limited is a fully licensed and certified pest control company serving homes, businesses, and industries across Kenya. Our team of trained professionals uses WHO&#8209;approved, eco&#8209;friendly products to deliver fast, effective, and lasting pest control solutions.</p>
             <p class="about-teaser-body">We believe every space deserves to be safe and pest&#8209;free — and we stand behind every treatment with a <strong>30&#8209;day satisfaction guarantee</strong>.</p>
             <div class="about-teaser-badges">
                 <span class="about-badge">&#x2714; PCPB Licensed</span>

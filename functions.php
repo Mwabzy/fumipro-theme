@@ -815,7 +815,7 @@ function fumitech_homepage_images_page() {
                 <!-- About Us card -->
                 <tr>
                     <th style="padding-top:20px;font-size:15px;" colspan="2">
-                        📌 About Us Card <span style="font-weight:400;color:#64748b;font-size:13px;">— shown in the "We Are Fumitech Services Limited" section</span>
+                        📌 About Us Card <span style="font-weight:400;color:#64748b;font-size:13px;">— shown in the "We Are Fumitech Phyto Services Limited" section</span>
                     </th>
                 </tr>
                 <tr>

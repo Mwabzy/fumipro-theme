@@ -229,7 +229,7 @@
       }
 
       var lines = [
-        'Hello Fumitech Services,',
+        'Hello Fumitech Phyto Services,',
         '',
         'I would like to book a service:',
         '',
@@ -269,7 +269,7 @@
       }
 
       var lines = [
-        'Hello Fumitech Services,',
+        'Hello Fumitech Phyto Services,',
         '',
         'I have an enquiry:',
         '',

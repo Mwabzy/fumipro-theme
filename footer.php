@@ -11,7 +11,7 @@
                     : get_option('fumitech_logo_url', '');
                 if (!$_fl_url) $_fl_url = get_template_directory_uri() . '/images/logo.png';
                 ?>
-                <img src="<?php echo esc_url($_fl_url); ?>" alt="Fumitech Services Limited" class="footer-logo-img" id="footer-logo-img">
+                <img src="<?php echo esc_url($_fl_url); ?>" alt="Fumitech Phyto Services Limited" class="footer-logo-img" id="footer-logo-img">
             </a>
             <p class="footer-tagline">Licensed, certified, and trusted by thousands of homes and businesses across Nairobi and Kenya.</p>
             <div class="footer-social">
@@ -76,7 +76,7 @@
 
     <!-- Footer bottom bar -->
     <div class="footer-bottom">
-        <p>&copy; <?php echo date('Y'); ?> Fumitech Services Limited. All rights reserved. | Licensed Pest Control Operators</p>
+        <p>&copy; <?php echo date('Y'); ?> Fumitech Phyto Services Limited. All rights reserved. | Licensed Pest Control Operators</p>
         <p class="footer-bottom-right">Built by Mwabzy | +254790848063</p>
     </div>
 </footer>

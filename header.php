@@ -3,7 +3,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fumitech Services Limited — Licensed, certified, and trusted pest control services across Nairobi and Kenya. Fast, effective, and eco-friendly fumigation available 24/7.">
+    <meta name="description" content="Fumitech Phyto Services Limited — Licensed, certified, and trusted pest control services across Nairobi and Kenya. Fast, effective, and eco-friendly fumigation available 24/7.">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -95,7 +95,7 @@ if (!empty($_nav_prod_parents) && !is_wp_error($_nav_prod_parents)) {
                     : get_option('fumitech_logo_url', '');
                 if (!$_logo_url) $_logo_url = get_template_directory_uri() . '/images/logo.png';
                 ?>
-                <img src="<?php echo esc_url($_logo_url); ?>" alt="Fumitech Services Limited" class="site-logo-img" id="site-logo-img">
+                <img src="<?php echo esc_url($_logo_url); ?>" alt="Fumitech Phyto Services Limited" class="site-logo-img" id="site-logo-img">
             </a>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
                 <span></span><span></span><span></span>
@@ -105,127 +105,117 @@ if (!empty($_nav_prod_parents) && !is_wp_error($_nav_prod_parents)) {
         <!-- Desktop Nav -->
         <nav class="desktop-nav" id="desktop-nav">
             <?php
-            wp_nav_menu([
-                'theme_location' => 'primary',
-                'container'      => false,
-                'items_wrap'     => '<ul class="nav-list">%3$s</ul>',
-                'fallback_cb'    => function() use ($_nav_svc_data, $_svc_archive_url, $_nav_prod_data, $_nav_prod_archive_url) {
-                    $h = home_url('/');
+            $h = home_url('/');
 
-                    /* ── Build Services dropdown HTML ─────────────────── */
-                    $svc_dd = '';
-                    if (!empty($_nav_svc_data)) {
-                        foreach ($_nav_svc_data as $cat_name => $items) {
-                            $svc_dd .= '<li class="has-submenu"><a href="#">' . esc_html($cat_name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a><ul class="submenu">';
-                            foreach ($items as $item) {
-                                $svc_dd .= '<li><a href="' . esc_url($_svc_archive_url . '#service-' . $item['id']) . '">' . esc_html($item['title']) . '</a></li>';
-                            }
-                            $svc_dd .= '</ul></li>';
-                        }
-                    } else {
-                        /* Static fallback — Pest Control links to homepage anchors */
-                        $svc_dd = '
-                          <li class="has-submenu">
-                            <a href="#">Pest Control <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="' . esc_url($h . '#svc-termite') . '">Termite Control</a></li>
-                              <li><a href="' . esc_url($h . '#svc-rodent') . '">Rodent Extermination</a></li>
-                              <li><a href="' . esc_url($h . '#svc-bedbug') . '">Bed Bug Treatment</a></li>
-                              <li><a href="' . esc_url($h . '#svc-cockroach') . '">Cockroach Control</a></li>
-                              <li><a href="' . esc_url($h . '#svc-spider') . '">Spider &amp; Insect Control</a></li>
-                              <li><a href="' . esc_url($h . '#svc-commercial') . '">Commercial Fumigation</a></li>
-                              <li><a href="' . esc_url($h . '#svc-pubhealth') . '">Public Health Pest Management</a></li>
-                              <li><a href="' . esc_url($h . '#svc-structural') . '">Structural Pest Management</a></li>
-                              <li><a href="' . esc_url($h . '#agri-fumigation') . '">Agricultural Fumigation</a></li>
-                            </ul>
-                          </li>
-                          <li class="has-submenu">
-                            <a href="#">Consultancy <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="' . esc_url($h . 'services') . '">Pesticide Registration</a></li>
-                              <li><a href="' . esc_url($h . 'services') . '">Product Development</a></li>
-                              <li><a href="' . esc_url($h . 'services') . '">Regulatory Policy Insights</a></li>
-                            </ul>
-                          </li>';
+            /* ── Services dropdown ───────────────────────────────────── */
+            $svc_dd = '';
+            if (!empty($_nav_svc_data)) {
+                foreach ($_nav_svc_data as $cat_name => $items) {
+                    $svc_dd .= '<li class="has-submenu"><a href="#">' . esc_html($cat_name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a><ul class="submenu">';
+                    foreach ($items as $item) {
+                        $svc_dd .= '<li><a href="' . esc_url($_svc_archive_url . '#service-' . $item['id']) . '">' . esc_html($item['title']) . '</a></li>';
                     }
+                    $svc_dd .= '</ul></li>';
+                }
+            } else {
+                $svc_dd = '
+                  <li class="has-submenu">
+                    <a href="#">Pest Control <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                    <ul class="submenu">
+                      <li><a href="' . esc_url($h . '#svc-termite') . '">Termite Control</a></li>
+                      <li><a href="' . esc_url($h . '#svc-rodent') . '">Rodent Extermination</a></li>
+                      <li><a href="' . esc_url($h . '#svc-bedbug') . '">Bed Bug Treatment</a></li>
+                      <li><a href="' . esc_url($h . '#svc-cockroach') . '">Cockroach Control</a></li>
+                      <li><a href="' . esc_url($h . '#svc-spider') . '">Spider &amp; Insect Control</a></li>
+                      <li><a href="' . esc_url($h . '#svc-commercial') . '">Commercial Fumigation</a></li>
+                      <li><a href="' . esc_url($h . '#svc-pubhealth') . '">Public Health Pest Management</a></li>
+                      <li><a href="' . esc_url($h . '#svc-structural') . '">Structural Pest Management</a></li>
+                      <li><a href="' . esc_url($h . '#agri-fumigation') . '">Agricultural Fumigation</a></li>
+                    </ul>
+                  </li>
+                  <li class="has-submenu">
+                    <a href="#">Consultancy <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                    <ul class="submenu">
+                      <li><a href="' . esc_url($h . 'services') . '">Pesticide Registration</a></li>
+                      <li><a href="' . esc_url($h . 'services') . '">Product Development</a></li>
+                      <li><a href="' . esc_url($h . 'services') . '">Regulatory Policy Insights</a></li>
+                    </ul>
+                  </li>';
+            }
 
-                    /* ── Build Products dropdown HTML ────────────────── */
-                    $prod_dd = '';
-                    foreach ($_nav_prod_data as $_pg) {
-                        $pt      = $_pg['term'];
-                        $kids    = $_pg['children'];
-                        $two_col = (count($kids) > 6) ? ' submenu--two-col' : '';
-                        $prod_dd .= '<li class="has-submenu"><a href="' . esc_url(get_term_link($pt)) . '">' . esc_html($pt->name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a>';
-                        if (!empty($kids)) {
-                            $prod_dd .= '<ul class="submenu' . $two_col . '">';
-                            foreach ($kids as $_kid) {
-                                $prod_dd .= '<li><a href="' . esc_url(get_term_link($_kid)) . '">' . esc_html($_kid->name) . '</a></li>';
-                            }
-                            $prod_dd .= '</ul>';
-                        }
-                        $prod_dd .= '</li>';
+            /* ── Products dropdown ───────────────────────────────────── */
+            $prod_dd = '';
+            foreach ($_nav_prod_data as $_pg) {
+                $pt      = $_pg['term'];
+                $kids    = $_pg['children'];
+                $two_col = (count($kids) > 6) ? ' submenu--two-col' : '';
+                $prod_dd .= '<li class="has-submenu"><a href="' . esc_url(get_term_link($pt)) . '">' . esc_html($pt->name) . ' <span class="nav-arrow nav-arrow--right">&#9658;</span></a>';
+                if (!empty($kids)) {
+                    $prod_dd .= '<ul class="submenu' . $two_col . '">';
+                    foreach ($kids as $_kid) {
+                        $prod_dd .= '<li><a href="' . esc_url(get_term_link($_kid)) . '">' . esc_html($_kid->name) . '</a></li>';
                     }
-
-                    echo '
-                    <ul class="nav-list">
-                      <li><a href="' . esc_url($h) . '">Home</a></li>
-                      <li><a href="' . esc_url($h . '#about') . '">About Us</a></li>
-
-                      <li class="has-dropdown">
-                        <a href="' . esc_url($_nav_prod_archive_url) . '">Products <span class="nav-arrow">&#9660;</span></a>
-                        <ul class="dropdown">
-                          ' . $prod_dd . '
-                        </ul>
-                      </li>
-
-                      <li class="has-dropdown">
-                        <a href="' . esc_url($_svc_archive_url) . '">Services <span class="nav-arrow">&#9660;</span></a>
-                        <ul class="dropdown">
-                          ' . $svc_dd . '
-                        </ul>
-                      </li>
-
-                      <li class="has-dropdown">
-                        <a href="' . esc_url($h . 'pests') . '">Pests <span class="nav-arrow">&#9660;</span></a>
-                        <ul class="dropdown">
-                          <li class="has-submenu">
-                            <a href="#">Crawling Insects <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="#">Ants</a></li>
-                              <li><a href="#">Bed Bugs</a></li>
-                              <li><a href="#">Cockroaches</a></li>
-                              <li><a href="#">Fleas</a></li>
-                              <li><a href="#">Spiders</a></li>
-                              <li><a href="#">Silverfish</a></li>
-                            </ul>
-                          </li>
-                          <li class="has-submenu">
-                            <a href="#">Flying Insects <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="#">Flies</a></li>
-                              <li><a href="#">Mosquitoes &amp; Midges</a></li>
-                              <li><a href="#">Moths</a></li>
-                              <li><a href="#">Wasps</a></li>
-                            </ul>
-                          </li>
-                          <li class="has-submenu">
-                            <a href="#">Rodents <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
-                            <ul class="submenu">
-                              <li><a href="#">Mice</a></li>
-                              <li><a href="#">Rats</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="#">Termites</a></li>
-                          <li><a href="#">Birds &amp; Snakes</a></li>
-                        </ul>
-                      </li>
-
-                      <li><a href="' . esc_url($h . 'products') . '">Shop</a></li>
-                      <li><a href="' . esc_url($h . '#contact') . '">Contact Us</a></li>
-                    </ul>';
-                },
-            ]);
+                    $prod_dd .= '</ul>';
+                }
+                $prod_dd .= '</li>';
+            }
             ?>
+            <ul class="nav-list">
+              <li><a href="<?php echo esc_url($h); ?>">Home</a></li>
+              <li><a href="<?php echo esc_url($h . '#about'); ?>">About Us</a></li>
+
+              <li class="has-dropdown">
+                <a href="<?php echo esc_url($_nav_prod_archive_url); ?>">Products <span class="nav-arrow">&#9660;</span></a>
+                <ul class="dropdown">
+                  <?php echo $prod_dd; ?>
+                </ul>
+              </li>
+
+              <li class="has-dropdown">
+                <a href="<?php echo esc_url($_svc_archive_url); ?>">Services <span class="nav-arrow">&#9660;</span></a>
+                <ul class="dropdown">
+                  <?php echo $svc_dd; ?>
+                </ul>
+              </li>
+
+              <li class="has-dropdown">
+                <a href="<?php echo esc_url($h . 'pests'); ?>">Pests <span class="nav-arrow">&#9660;</span></a>
+                <ul class="dropdown">
+                  <li class="has-submenu">
+                    <a href="#">Crawling Insects <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                    <ul class="submenu">
+                      <li><a href="#">Ants</a></li>
+                      <li><a href="#">Bed Bugs</a></li>
+                      <li><a href="#">Cockroaches</a></li>
+                      <li><a href="#">Fleas</a></li>
+                      <li><a href="#">Spiders</a></li>
+                      <li><a href="#">Silverfish</a></li>
+                    </ul>
+                  </li>
+                  <li class="has-submenu">
+                    <a href="#">Flying Insects <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                    <ul class="submenu">
+                      <li><a href="#">Flies</a></li>
+                      <li><a href="#">Mosquitoes &amp; Midges</a></li>
+                      <li><a href="#">Moths</a></li>
+                      <li><a href="#">Wasps</a></li>
+                    </ul>
+                  </li>
+                  <li class="has-submenu">
+                    <a href="#">Rodents <span class="nav-arrow nav-arrow--right">&#9658;</span></a>
+                    <ul class="submenu">
+                      <li><a href="#">Mice</a></li>
+                      <li><a href="#">Rats</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#">Termites</a></li>
+                  <li><a href="#">Birds &amp; Snakes</a></li>
+                </ul>
+              </li>
+
+              <li><a href="<?php echo esc_url($h . 'products'); ?>">Shop</a></li>
+              <li><a href="<?php echo esc_url($h . '#contact'); ?>">Contact Us</a></li>
+            </ul>
         </nav>
 
         <!-- Search -->
