@@ -391,13 +391,14 @@ if ($featured_products->have_posts()) : ?>
         <div class="about-teaser-visual" aria-hidden="true">
             <?php
             $about_card_img_id  = (int) get_option('fumitech_about_card_img_id', 0);
-            $about_card_img     = $about_card_img_id
-                ? ( wp_get_attachment_image_url($about_card_img_id, 'large') ?: get_option('fumitech_about_card_img_url', '') )
-                : get_option('fumitech_about_card_img_url', '');
+            $about_card_img_tag = $about_card_img_id
+                ? wp_get_attachment_image($about_card_img_id, 'large', false, ['class' => 'card-img-fill', 'alt' => 'About Fumitech Services'])
+                : '';
             ?>
-            <div class="about-teaser-img-box<?php echo $about_card_img ? ' about-teaser-img-box--photo' : ''; ?>"
-                 <?php if ($about_card_img) echo 'style="background-image:url(' . esc_url($about_card_img) . ');background-size:cover;background-position:center;"'; ?>>
-                <?php if (!$about_card_img) : ?>
+            <div class="about-teaser-img-box<?php echo $about_card_img_tag ? ' about-teaser-img-box--photo' : ''; ?>">
+                <?php if ($about_card_img_tag) : ?>
+                    <?php echo $about_card_img_tag; ?>
+                <?php else : ?>
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
                     <path d="M40 14C30 28 20 30 14 28C14 42 22 56 40 62C58 56 66 42 66 28C60 30 50 28 40 14Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
@@ -433,14 +434,15 @@ if ($featured_products->have_posts()) : ?>
     <div class="section-inner why-inner">
         <div class="why-visual" aria-hidden="true">
             <?php
-            $why_card_img_id = (int) get_option('fumitech_why_card_img_id', 0);
-            $why_card_img    = $why_card_img_id
-                ? ( wp_get_attachment_image_url($why_card_img_id, 'large') ?: get_option('fumitech_why_card_img_url', '') )
-                : get_option('fumitech_why_card_img_url', '');
+            $why_card_img_id  = (int) get_option('fumitech_why_card_img_id', 0);
+            $why_card_img_tag = $why_card_img_id
+                ? wp_get_attachment_image($why_card_img_id, 'large', false, ['class' => 'card-img-fill', 'alt' => 'Why Choose Fumitech'])
+                : '';
             ?>
-            <div class="why-img-box<?php echo $why_card_img ? ' why-img-box--photo' : ''; ?>"
-                 <?php if ($why_card_img) echo 'style="background-image:url(' . esc_url($why_card_img) . ');background-size:cover;background-position:center;"'; ?>>
-                <?php if (!$why_card_img) : ?>
+            <div class="why-img-box<?php echo $why_card_img_tag ? ' why-img-box--photo' : ''; ?>">
+                <?php if ($why_card_img_tag) : ?>
+                    <?php echo $why_card_img_tag; ?>
+                <?php else : ?>
                 <div class="why-img-content">
                     <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>

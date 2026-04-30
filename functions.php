@@ -16,7 +16,7 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.6'
+        '3.7'
     );
 
     wp_enqueue_script(
@@ -278,6 +278,14 @@ add_action('init', 'fumitech_register_post_types');
 add_action('after_switch_theme', function () {
     fumitech_register_post_types();
     flush_rewrite_rules();
+});
+
+// One-time flush on first admin load after deploy (fixes 404 on taxonomy/CPT URLs)
+add_action('admin_init', function () {
+    if (!get_option('fumitech_rewrite_v3')) {
+        flush_rewrite_rules();
+        update_option('fumitech_rewrite_v3', true);
+    }
 });
 
 

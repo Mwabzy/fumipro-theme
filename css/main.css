@@ -2911,6 +2911,7 @@ button {
   background: linear-gradient(135deg, var(--sky-700), var(--sky-500));
   border-radius: var(--radius-xl);
   height: 240px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2921,6 +2922,15 @@ button {
 }
 .about-teaser-img-box--photo {
   background: none;
+}
+.card-img-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
 }
 .about-teaser-img-label {
   color: rgba(255, 255, 255, 0.75);

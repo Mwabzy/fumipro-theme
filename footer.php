@@ -4,7 +4,14 @@
         <!-- Brand column -->
         <div class="footer-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo footer-logo" id="footer-logo">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/images/logo.png'); ?>" alt="Fumitech Services Limited" class="footer-logo-img" id="footer-logo-img">
+                <?php
+                $_fl_id  = (int) get_option('fumitech_logo_id', 0);
+                $_fl_url = $_fl_id
+                    ? (wp_get_attachment_image_url($_fl_id, 'full') ?: get_option('fumitech_logo_url', ''))
+                    : get_option('fumitech_logo_url', '');
+                if (!$_fl_url) $_fl_url = get_template_directory_uri() . '/images/logo.png';
+                ?>
+                <img src="<?php echo esc_url($_fl_url); ?>" alt="Fumitech Services Limited" class="footer-logo-img" id="footer-logo-img">
             </a>
             <p class="footer-tagline">Licensed, certified, and trusted by thousands of homes and businesses across Nairobi and Kenya.</p>
             <div class="footer-social">
