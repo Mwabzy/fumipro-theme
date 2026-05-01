@@ -3,7 +3,6 @@
  * FumiPro — functions.php
  */
 
-require_once get_template_directory() . '/inc/admin-submit-form.php';
 
 // ── Enqueue assets ──────────────────────────────────────────────────────────
 function fumipro_enqueue_assets() {
