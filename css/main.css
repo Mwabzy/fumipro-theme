@@ -370,8 +370,8 @@ button {
 .dropdown {
   position: absolute;
   top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  left: 0;
+  transform: translateY(8px);
   min-width: 220px;
   background: var(--white);
   border: 1px solid var(--slate-200);
@@ -396,7 +396,7 @@ button {
 .has-dropdown:focus-within > .dropdown {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   transition:
     opacity 0.18s ease,
     transform 0.18s ease,

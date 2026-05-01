@@ -83,7 +83,7 @@ $cats   = get_the_terms(get_the_ID(), 'product_category');
     <?php
     $related = new WP_Query([
         'post_type'      => 'fumitech_product',
-        'posts_per_page' => 3,
+        'posts_per_page' => 5,
         'post__not_in'   => [get_the_ID()],
         'orderby'        => 'rand',
     ]);

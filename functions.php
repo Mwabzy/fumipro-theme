@@ -16,7 +16,7 @@ function fumipro_enqueue_assets() {
         'fumipro-main',
         get_stylesheet_directory_uri() . '/css/main.css',
         ['fumipro-google-fonts'],
-        '3.7'
+        '3.8'
     );
 
     wp_enqueue_script(
@@ -273,6 +273,20 @@ function fumitech_register_post_types() {
     ]);
 }
 add_action('init', 'fumitech_register_post_types');
+
+// Fix taxonomy archive queries and set posts per page for product archives
+add_action('pre_get_posts', function (WP_Query $q) {
+    if (is_admin() || !$q->is_main_query()) return;
+
+    if ($q->is_tax('product_category')) {
+        $q->set('post_type', 'fumitech_product');
+        $q->set('posts_per_page', 12);
+    }
+
+    if ($q->is_post_type_archive('fumitech_product')) {
+        $q->set('posts_per_page', 12);
+    }
+});
 
 // Flush rewrite rules when theme is activated
 add_action('after_switch_theme', function () {
