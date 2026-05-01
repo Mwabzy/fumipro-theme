@@ -269,7 +269,7 @@ function fumitech_register_post_types() {
         'hierarchical'      => true,
         'public'            => true,
         'rewrite'           => ['slug' => 'product-category'],
-        'show_in_rest'      => true,
+        'show_in_rest'      => false,
     ]);
 }
 add_action('init', 'fumitech_register_post_types');
@@ -565,13 +565,18 @@ add_action('save_post_fumitech_product', function ($post_id) {
     }
 
     // ── Save category assignment ──────────────────────────────────────────────
-    // If a sub-category is chosen, assign that (it implies the parent).
-    // Otherwise assign the parent category. Clear if nothing selected.
+    // Assign both child and parent so archives at both levels show this product.
     $child_id  = isset($_POST['fumitech_cat_child'])  ? (int) $_POST['fumitech_cat_child']  : 0;
     $parent_id = isset($_POST['fumitech_cat_parent']) ? (int) $_POST['fumitech_cat_parent'] : 0;
 
-    if ($child_id) {
-        wp_set_object_terms($post_id, [$child_id], 'product_category');
+    if ($child_id && $parent_id) {
+        wp_set_object_terms($post_id, [$child_id, $parent_id], 'product_category');
+    } elseif ($child_id) {
+        $child_term = get_term($child_id, 'product_category');
+        $terms = $child_term && !is_wp_error($child_term) && $child_term->parent
+            ? [$child_id, $child_term->parent]
+            : [$child_id];
+        wp_set_object_terms($post_id, $terms, 'product_category');
     } elseif ($parent_id) {
         wp_set_object_terms($post_id, [$parent_id], 'product_category');
     } else {
@@ -579,6 +584,24 @@ add_action('save_post_fumitech_product', function ($post_id) {
     }
 });
 
+
+// ── One-time backfill: ensure every product is also assigned its parent term ──
+add_action('admin_init', function () {
+    if (get_option('fumitech_cat_backfill_v1')) return;
+    $posts = get_posts(['post_type' => 'fumitech_product', 'numberposts' => -1, 'post_status' => 'any']);
+    foreach ($posts as $p) {
+        $terms = wp_get_object_terms($p->ID, 'product_category', ['fields' => 'all']);
+        if (empty($terms) || is_wp_error($terms)) continue;
+        $all_ids = array_map(fn($t) => $t->term_id, $terms);
+        foreach ($terms as $term) {
+            if ($term->parent && !in_array($term->parent, $all_ids)) {
+                $all_ids[] = $term->parent;
+            }
+        }
+        wp_set_object_terms($p->ID, $all_ids, 'product_category');
+    }
+    update_option('fumitech_cat_backfill_v1', true);
+});
 
 // ── Featured on Homepage metabox ─────────────────────────────────────────────
 add_action('add_meta_boxes', function () {

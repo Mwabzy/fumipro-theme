@@ -291,8 +291,7 @@ button {
   margin: 0;
   flex-wrap: nowrap;
 }
-.desktop-nav .nav-list li a,
-.desktop-nav ul li a {
+.desktop-nav .nav-list > li > a {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,8 +306,7 @@ button {
   position: relative;
   white-space: nowrap;
 }
-.desktop-nav .nav-list li a::after,
-.desktop-nav ul li a::after {
+.desktop-nav .nav-list > li > a::after {
   content: "";
   position: absolute;
   bottom: 4px;
@@ -320,23 +318,26 @@ button {
   transform: scaleX(0);
   transition: transform var(--duration) var(--ease);
 }
-.desktop-nav .nav-list li a:hover,
-.desktop-nav ul li a:hover {
+.desktop-nav .nav-list > li > a:hover {
   background: var(--sky-50);
   color: var(--sky-600);
 }
-.desktop-nav .nav-list li a:hover::after,
-.desktop-nav ul li a:hover::after {
+.desktop-nav .nav-list > li > a:hover::after {
   transform: scaleX(1);
 }
-.desktop-nav .nav-list li.current-menu-item a,
-.desktop-nav ul li.current-menu-item a {
+.desktop-nav .nav-list > li.current-menu-item > a {
   color: var(--sky-600);
   background: var(--sky-50);
 }
-.desktop-nav .nav-list li.current-menu-item a::after,
-.desktop-nav ul li.current-menu-item a::after {
+.desktop-nav .nav-list > li.current-menu-item > a::after {
   transform: scaleX(1);
+}
+
+/* Force left-alignment for all links inside dropdowns/submenus */
+.desktop-nav .dropdown a,
+.desktop-nav .submenu a {
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
 
 /* ── Dropdown menus ─────────────────────────────────────── */
@@ -503,6 +504,17 @@ button {
 .submenu--two-col li a {
   white-space: normal;
   text-align: left;
+}
+
+/* Submenu overflow — flips to left side when right edge would clip */
+.submenu--flip-left {
+  left: auto !important;
+  right: 100% !important;
+  transform: translateX(-8px);
+}
+.has-submenu:hover > .submenu--flip-left,
+.has-submenu:focus-within > .submenu--flip-left {
+  transform: translateX(0) !important;
 }
 
 /* ── Mobile accordion nav ────────────────────────────────── */

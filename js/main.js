@@ -349,6 +349,36 @@
     startCarousel();
   }
 
+  /* ── Dropdown overflow: flip left when right edge clips ─── */
+  document.querySelectorAll('.has-dropdown').forEach(function (item) {
+    item.addEventListener('mouseenter', function () {
+      var dd = item.querySelector(':scope > .dropdown');
+      if (!dd) return;
+      var rect = dd.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 10) {
+        dd.style.left = 'auto';
+        dd.style.right = '0';
+      }
+    });
+  });
+
+  /* ── Submenu overflow: flip to left side when right clips ── */
+  document.querySelectorAll('.has-submenu').forEach(function (item) {
+    item.addEventListener('mouseenter', function () {
+      var sm = item.querySelector(':scope > .submenu');
+      if (!sm) return;
+      var prev = { opacity: sm.style.opacity, visibility: sm.style.visibility };
+      sm.style.opacity = '0';
+      sm.style.visibility = 'visible';
+      var rect = sm.getBoundingClientRect();
+      sm.style.opacity = prev.opacity;
+      sm.style.visibility = prev.visibility;
+      if (rect.right > window.innerWidth - 10) {
+        sm.classList.add('submenu--flip-left');
+      }
+    });
+  });
+
   /* ── Active nav link on scroll ──────────────────────────── */
   var sections = document.querySelectorAll('section[id], div[id="emergency-banner"]');
   var navLinks = document.querySelectorAll('.desktop-nav a, .mobile-nav a');
